@@ -1,0 +1,10 @@
+plugins {
+  id 'org.jbake.site' version '1.2.0'
+}
+
+jbake {
+  srcDirName = 'content_en'
+  destDirName = 'en'
+  clearCache = true
+}
+
