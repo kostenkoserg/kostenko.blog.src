@@ -14,7 +14,6 @@
           <ul class="nav navbar-nav">
             <li><a href="<#if (content.rootpath)??>${content.rootpath}<#else></#if>about.html">About</a></li>
 						<li><a href="<#if (content.rootpath)??>${content.rootpath}<#else></#if>about.html">Resume</a></li>
-            <li><a href="<#if (content.rootpath)??>${content.rootpath}<#else></#if>${config.feed_file}">Feed</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -24,6 +23,12 @@
 								</ul>
 						</li>
           </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="<#if (content.rootpath)??>${content.rootpath}<#else></#if>${config.feed_file}"></a></li>
+					</ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
