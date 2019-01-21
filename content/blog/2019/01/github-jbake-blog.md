@@ -28,7 +28,10 @@ $ git push
 Congrats! Our new site currently available over world wide web: https://kostenkoserg.github.io
 
 ![first_github_page](/ru/img/first_github_page.png)
-By the way  you also can use existing domain for your GitHub based site.
+By the way  you also can use existing domain for your GitHub based site. For do that you just need to
+
+* Add ``A`` records to your DNS provider with GitHub IP's
+* Provide in GitHub project settings your DNS name
 
 
 #### Step 2. Static blog generation with JBake
