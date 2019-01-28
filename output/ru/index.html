@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>JBake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Sergii Kostenko's blog</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="about.html">About</a></li>
+						<li><a href="resume.html">Resume</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="tags/blog.html">blog</a></li>
+										<li><a href="tags/github.html">github</a></li>
+										<li><a href="tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+  			<a href="blog/2019/01/jbake-blog-improve.html"><h1>Jbake. Добавляем теги, поддержку нескольких языков и аналитику</h1></a>
+  			<p>19 января 2019</p>
+  			<p><h4>1. Теги</h4>
+<p>Jbake поддерживает работу с тегами из коробки и при использовании тегов в описании будет генерироваться отдельная страница под каждый тег. Достаточно отредактировать параметр <code>render.tags</code> в конфигурационном файле <code>jbake.properties</code></p>
+<pre><code>render.tags=true
+</code></pre>
+<p>Теперь в зависимости от того, где мы хотим разместить список тегов, редактируем соответствующий темплейт. Для этого блога я использую freemarker и решил вывести теги в меню в виде выпадающего списка. Соответственно, изменив  ``menu.ftl`, как показано ниже:</p>
+<pre><code>  &lt;ul class=&quot;dropdown-menu&quot;&gt;
+      &lt;#list tags as tag&gt;
+        &lt;li&gt;&lt;a href=&quot;${content.rootpath}${tag.uri}&quot;&gt;${tag.name}&lt;/a&gt;&lt;/li&gt;
+      &lt;/#list&gt;
+  &lt;/ul&gt;
+</code></pre>
+<p>Готово!</p>
+<h4>2. Контент на нескольких языках</h4>
+<p>К сожалению, Jbake пока не поддерживает мультиязычные блоги на уровне метаданных и для обеспечения этой функциональности мне пришлость проделать несколько нехитрых упражнений. Сперва, я просто хотел сделать полную копию с другим языком контента, но в случае любых изменений для шаблонов, скриптов, изображений - правки пришлось бы делать дважды. Что не есть хорошо.</p>
+<p>Вместо этого я просто создал каталог <code>content_ru</code> в корне проекта.</p>
+<pre><code>├── assets  
+├── content  
+├── content_ru
+├── templates
+├── jbake.properties
+├── README.md  
+</code></pre>
+<p>К счастью, в <code>jbake.properies</code> есть возможность установить каталог контента, который будет использован при генерации, что позволяет держать несколько директорий в проекте.  Теперь сгенерировать мультиязычный блог можно используя скрипт:</p>
+<p>bakeblog.sh:</p>
+<pre><code>#!/bin/bash
+
+# Helper script to bake the blog
+# Author: kostenko
+
+export PATH=&quot;/opt/jbake-2.6.3-bin/bin&quot;:$PATH
+rm -R ./output
+# Building en version
+export JBAKE_OPTS=&quot;-Duser.language=EN&quot;
+jbake -b
+# Build ru version
+export JBAKE_OPTS=&quot;-Duser.language=RU&quot;
+mv jbake.properties jbake.properties.orig
+cat jbake.properties.orig &gt;&gt; jbake.properties
+echo &quot;content.folder=content_ru&quot; &gt;&gt; jbake.properties
+jbake -b . output/ru
+# cleanup
+rm jbake.properties
+mv jbake.properties.orig jbake.properties
+</code></pre>
+<p>Добавим возможность переключения языков в меню:</p>
+<pre><code>&lt;!-- switch language --&gt;
+&lt;ul class=&quot;nav navbar-nav navbar-right&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;/&quot;&gt;en&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/ru&quot;&gt;ru&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p>На этом все!</p>
+<h4>3. Аналитика</h4>
+<p>Для того что бы подключить <a href="https://analytics.google.com">Google analytics</a> нужно выполнить несколько простых шагов</p>
+<ul>
+<li>Зарегестировать ресурс в GA</li>
+<li>Получить сгенерированный GA фрагмент кода</li>
+<li>Вставить этот код в <code>header.ftl</code> первой строкой блока <code>&lt;HEAD&gt;</code>.</li>
+</ul>
+<pre><code>&lt;!-- Global site tag (gtag.js) - Google Analytics --&gt;
+&lt;head&gt;
+  &lt;script async src=&quot;https://www.googletagmanager.com/gtag/js?id=&lt;YOUR_GA_ID&gt;&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '&lt;YOUR_GA_ID&gt;');
+  &lt;/script&gt;
+  ...
+</code></pre>
+<p>P.S. При желании к блогу можно подключить возможность оставлять комментарии, используя например <a href="https://disqus.com/">Disqus</a>.<br />
+P.P.S. Код этого блога доступен на <a href="https://github.com/kostenkoserg/kostenko.blog.src">GitHub</a></p>
+</p>
+				<hr/>
+  			<a href="blog/2019/01/github-jbake-blog.html"><h1>Как поднять блог на github и jbake</h1></a>
+  			<p>18 января 2019</p>
+  			<p><p>Развернуть свой персональный блог, блог компании или лендинг проекта используя <a href="https://pages.github.com/">github</a> - задача, как оказалось, несложная и не требующая особых навыков. Здесь я, максимально конструктивно, постараюсь изложить основные шаги, которые необходимо сделать для того, что бы обзавестись личным блогом на небезизвестном ресурсе.</p>
+<h4>Шаг 1. Хостим статику на github</h4>
+<p>Для этого нам потребуются аккаунт на <a href="https://github.com/">github</a> и базовые навыки работы с <a href="https://git-scm.com/">git</a>. К слову сказать, все ниже изложенное можно проделать и для конкурирующего сервиса <a href="https://gitlab.com/">gitlab</a>, - где кому больше нравится.</p>
+<p>Далее, нужно просто создать проект, назвав его:  &lt;логин&gt;.github.io, например kostenkoserg.github.io</p>
+<p><img src="/ru/img/my_github_srcshot.png" alt="github pages project screenshot" /></p>
+<p>В принципе, на этом вся подготовительная рабобта для хостинга статики и завершена. Теперь клонируем проект себе (пока пустой), создаём index.html и пушим в репозиторий:</p>
+<pre><code>$ git clone https://github.com/kostenkoserg/kostenkoserg.github.io.git
+$ cd kostenkoserg.github.io
+$ echo &quot;Hello World!&quot;
+$ git commit -m &quot;my first github page&quot;
+$ git push
+</code></pre>
+<p>Все! Страничка доступна по <a href="https://kostenkoserg.github.io">https://kostenkoserg.github.io</a></p>
+<p><img src="/ru/img/first_github_page.png" alt="first_github_page" /><br />
+По желанию, к сайту можно подвязать уже существующий домен, если по каким-либо соображениям .github.io не подходит. Для этого нужно</p>
+<ul>
+<li>Добавить <code>A</code> записи в настройках DNS провайдера с GitHub ипишниками</li>
+<li>В настройках проекта на  GitHub указать DNS имя</li>
+</ul>
+<h4>Шаг 2. Генерация статического сайта с помощью Jbake</h4>
+<p><a href="https://jbake.org/">Jbake</a> - это проект, с открытым исходным кодом, для генерации статических сайтов. Для Jbake доступна интеграция с  Gradle и Maven, из коробки поддержка Bootstrap и прозрачная интеграция с другими CSS фреймворками, а так же поддержка Freemarker, Groovy, Thymeleaf и Jade в качестве шаблонов.</p>
+<p>Для начала работы с Jbake, качаем дистрибутив с <a href="https://jbake.org/download.html">сайта проекта</a> и распаковываем архив куда-то себе. После чего генерируем структуру своего сайта:</p>
+<pre><code>$ cd myblog
+$ /opt/jbake/bin/jbake -i
+</code></pre>
+<p>В результате получаем следующую структуру каталогов и немного тестового контента:</p>
+<pre><code>├── assets
+│   ├── css
+│   │   ├── asciidoctor.css
+│   │   ├── base.css
+│   │   ├── bootstrap.min.css
+│   │   └── prettify.css
+│   ├── favicon.ico
+│   ├── fonts
+│   │   ├── ...
+│   └── js
+│       ├── bootstrap.min.js
+│       ├── html5shiv.min.js
+│       ├── jquery-1.11.1.min.js
+│       └── prettify.js
+├── content
+│   ├── about.html
+│   └── blog
+│       └── 2013
+│           ├── first-post.html
+│           ├── second-post.md
+│           └── third-post.adoc
+├── jbake.properties
+└── templates
+    ├── archive.ftl
+    ├── feed.ftl
+    ├── footer.ftl
+    ├── header.ftl
+    ├── index.ftl
+    ├── menu.ftl
+    ├── page.ftl
+    ├── post.ftl
+    ├── sitemap.ftl
+    └── tags.ftl
+</code></pre>
+<p>Теперь генерируем сам сайт:</p>
+<pre><code>/opt/jbake/bin/jbake -b
+</code></pre>
+<p>В результате чего получим каталог <code>output</code> с нашим статическим сайтом.<br />
+Проверить, что получилось можно по <a href="http://localhost:8820/">http://localhost:8820/</a>, запустив всторенный сервер</p>
+<pre><code>/opt/jbake/bin/jbake -s
+</code></pre>
+<p><img src="/ru/img/jbake_default_site.png" alt="jbake_default_site" /></p>
+<p>Всё! наш статический сайт готов! Для полноценного ведения блога, теперь достаточно отредактировать содержимое каталога <code>content</code>, перегенерировать сайт и запушить полученный <code>output</code> в, созданный на первом шаге, github репозиторий.</p>
+<p>Jbake поддерживает несколько форматов контента: HTML, Markdown, AsciiDoc, - что позволяет вести свой сайт, используя любой текстовый редактор. Я использую <a href="https://atom.io/">Atom</a> и <a href="https://www.markdownguide.org/basic-syntax/">Markdown</a>.</p>
+</p>
+				<hr/>
+  			<a href="blog/2019/01/start-blogging.html"><h1>Первая запись в блоге</h1></a>
+  			<p>17 января 2019</p>
+  			<p><p>Мысли о собственном блоге посещали меня уже давно и достаточно регулярно, но в силу различных причин реализация задуманного откладывалась. Среди причин было и желание реализовать собственный движок для блогов (зачем-то), и поиск подходящих стилей (ведь так важно), и знакомство со специализированными решениями: wordpress, wix, blogger и другими...</p>
+<p>В итоге, в качестве платформы был выбран <a href="https://pages.github.com/">pages.github.io</a> с его генератором статического контента <a href="https://jekyllrb.com/">Jekyll</a>. Последнее показалось мне самым сбалансированным решеним: понятно, бесплантно,  быстро, надежно. Да и найти лучшее место для технического блога сегодня, наверное, трудно. По мере знакомства с  предметной областью, мне попалась java-альтернатиа  Jekyll (рубби) в лице проекта <a href="https://jbake.org/">JBake</a>, что как java-разработчику мне показалось ближе.</p>
+<p>Ну что ж, решение принято, стек выбран, - вперёд!</p>
+</p>
+				<hr/>
+
+	<p>Older posts are available in the <a href="archive.html">archive</a>.</p>
+
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.3</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+
+  </body>
+</html>
