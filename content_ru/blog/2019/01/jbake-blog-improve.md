@@ -1,7 +1,7 @@
 title= Jbake. Добавляем теги, поддержку нескольких языков и аналитику
 date=2019-01-19
 type=post
-tags=jbake
+tags=JBake
 status=published
 ~~~~~~
 #### 1. Теги

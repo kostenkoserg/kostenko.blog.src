@@ -1,7 +1,7 @@
 title=Как поднять блог на github и jbake
 date=2019-01-18
 type=post
-tags=github, jbake
+tags=GitHub, JBake
 status=published
 ~~~~~~
 

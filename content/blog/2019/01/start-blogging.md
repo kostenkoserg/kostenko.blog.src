@@ -1,7 +1,6 @@
 title=My first blog post
 date=2019-01-17
 type=post
-tags=blog
 status=published
 ~~~~~~
 
