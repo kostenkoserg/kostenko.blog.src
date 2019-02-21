@@ -17,7 +17,7 @@ status=published
 
 В принципе, на этом вся подготовительная рабобта для хостинга статики и завершена. Теперь клонируем проект себе (пока пустой), создаём index.html и пушим в репозиторий:
 
-```
+```bash
 $ git clone https://github.com/kostenkoserg/kostenkoserg.github.io.git
 $ cd kostenkoserg.github.io
 $ echo "Hello World!"
@@ -41,13 +41,13 @@ $ git push
 
 Для начала работы с Jbake, качаем дистрибутив с [сайта проекта](https://jbake.org/download.html) и распаковываем архив куда-то себе. После чего генерируем структуру своего сайта:
 
-```
+```bash
 $ cd myblog
 $ /opt/jbake/bin/jbake -i
 ```
 
 В результате получаем следующую структуру каталогов и немного тестового контента:
-```
+```bash
 ├── assets
 │   ├── css
 │   │   ├── asciidoctor.css
@@ -85,13 +85,13 @@ $ /opt/jbake/bin/jbake -i
 
 Теперь генерируем сам сайт:
 
-```
+```bash
 /opt/jbake/bin/jbake -b
 ```
 В результате чего получим каталог ```output``` с нашим статическим сайтом.
 Проверить, что получилось можно по http://localhost:8820/, запустив всторенный сервер
 
-```
+```bash
 /opt/jbake/bin/jbake -s
 ```
 ![jbake_default_site](/ru/img/jbake_default_site.png)

@@ -17,7 +17,7 @@ Now you need to create new project named as [account].github.io For example: kos
 
 Actually, we already did all necessary preparation for our hosting. Now just clone the project, create simple index.html and push it back to the repository:
 
-```
+```bash
 $ git clone https://github.com/kostenkoserg/kostenkoserg.github.io.git
 $ cd kostenkoserg.github.io
 $ echo "Hello World!"
@@ -40,12 +40,12 @@ By the way  you also can use existing domain for your GitHub based site. For do 
 
 To start with let's download distribution from [project site](https://jbake.org/download.html) and extract the package to your favorite directory. Now we can generate static site with example content
 
-```
+```bash
 $ /opt/jbake/bin/jbake -i
 ```
 
 As result we should have site template with next structire:
-```
+```bash
 ├── assets
 │   ├── css
 │   │   ├── asciidoctor.css
@@ -83,14 +83,14 @@ As result we should have site template with next structire:
 
 Let's generate site from above
 
-```
+```bash
 /opt/jbake/bin/jbake -b
 ```
 
 After that we will have direcory ```output``` with our static site.
 To check the result you can start embedded server and open  http://localhost:8820/
 
-```
+```bash
 /opt/jbake/bin/jbake -s
 ```
 ![jbake_default_site](/ru/img/jbake_default_site.png)

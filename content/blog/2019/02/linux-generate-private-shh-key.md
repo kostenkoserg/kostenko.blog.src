@@ -9,25 +9,25 @@ Sometimes, by security or usability reasons authentication with SSH keys looks m
 
 * Login your remote instance
 * Generate ssh keys by
-```
+```bash
 ssh-keygen -t rsa -f ~/.ssh/[KEY_FILENAME] -C [USERNAME]
 cat [KEY_FILENAME].pub >> ~/.ssh/authorized_keys
 ```
 * Download private key ([KEY_FILENAME]) to your local PC
 * Try to connect from your local with key:
-```
+```bash
 chmod 400 [KEY_FILENAME]
 ssh -i [KEY_FILENAME] [USERNAME]@yourhost.com
 ```
 
 To disable root login and password based login refer to  `/etc/ssh/sshd_config` and edid next sections:
 
-```
+```bash
 PasswordAuthentication no
 PermitRootLogin no
 ```
 
 Then reload ssh server
-```
+```bash
 sudo service ssh restart
 ```

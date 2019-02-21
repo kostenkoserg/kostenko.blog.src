@@ -9,24 +9,24 @@ status=published
 
 * Логинимся на удаленный инстанс
 * Генерируем ключи
-```
+```bash
 ssh-keygen -t rsa -f ~/.ssh/[KEY_FILENAME] -C [USERNAME]
 cat [KEY_FILENAME].pub >> ~/.ssh/authorized_keys
 ```
 * Скачиваем приватный ключ  ([KEY_FILENAME]) себе
 * Заходим на хост с использованием ключа
-```
+```bash
 chmod 400 [KEY_FILENAME]
 ssh -i [KEY_FILENAME] [USERNAME]@yourhost.com
 ```
 
 Для того, что бы запретить логиниться с паролем и под рутом, отредактируйте  `/etc/ssh/sshd_config`:
 
-```
+```bash
 PasswordAuthentication no
 PermitRootLogin no
 ```
 Затем перезагрузите ssh сервер
-```
+```bash
 sudo service ssh restart
 ```

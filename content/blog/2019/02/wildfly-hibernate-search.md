@@ -1,5 +1,5 @@
-title=Hibernate Search with Wildfly
-date=2019-01-21
+title=Hibernate Search introduction. Deploying on WildFly.
+date=2019-02-21
 type=post
 tags=Hibernate, Wildfly, JPA
 status=published
@@ -11,7 +11,7 @@ So, will see how it works on practice in few simple steps...
 
 **1. Let's start with gradle project using EE and hibernate-search dependencies**
 `build.gradle:`
-```
+```java
 apply plugin: 'java'
 apply plugin: 'war'
 sourceCompatibility = '1.8'
@@ -32,7 +32,7 @@ dependencies {
 ```
 **2. Create standart JPA entity with hibernate-search annotations**
 `src/main/java/org/.../BlogEntity.java:`
-```
+```java
 package org.kostenko.example.wildfly.hibernatesearch;
 
 import javax.persistence.*;
@@ -45,31 +45,16 @@ public class BlogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     @Field(store = Store.YES)
     private String title;
+
     @Column
     @Field(store = Store.YES)
     private String body;
 
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getBody() {
-        return body;
-    }
-    public void setBody(String body) {
-        this.body = body;
-    }
+     // getters, setters
 }
 ```
 Main Hibernate Search annotations:
@@ -77,14 +62,14 @@ Main Hibernate Search annotations:
 |Annotation    | Description|
 | -----------  | ----------- |
 |@Indexed      | Marks which entities shall be indexed; Allows override the index name. Only @Indexed entities can be searched.|
-|@Field        | Marks an entity property to be indexed. Supports various options to customize the indexing format: `store` -  enum type indicating whether the value should be stored in the document. Defaults to `Store.NO` (Field value will not be stored in the index. Storing of values can be helpful to use projections and restore jbjects directly from index), `index` -  enum defining whether the value should be indexed or not. Defaults to `Index.YES` |
+|@Field        | Marks an entity property to be indexed. Supports various options to customize the indexing format: `store` -  enum type indicating whether the value should be stored in the document. Defaults to `Store.NO` (Field value will not be stored in the index. Storing of values can be helpful to use projections and restore objects directly from index instead of mapped ORM entity), `index` -  enum defining whether the value should be indexed or not. Defaults to `Index.YES` |
 |@DocumentId   | Override the property being used as primary identifier in the index. Defaults to the property with JPA’s @Id. |
 |@SortableField| Marks a property so that it will be indexed in such way to allow efficient sorting on it.|
 
 
 **3. Add hibernate-search properties to persistence.xml**
 `src/test/resources/META-INF/persistence.xml :`
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="myDSTest" transaction-type="RESOURCE_LOCAL">
@@ -108,3 +93,108 @@ Main Hibernate Search annotations:
 </persistence>
 ```
 As you can see from above, it is easy enough (just with few annotations) add Hibernate Search into your application. Now Hibernate will automatically build index each time the entity persisted, updated or removed through Hibernate ORM. The index can be stored in `ram` or on  `filesystem`. Others directory providers also available - refer official documentation for details.
+
+So, time to do simple test to show how it works with **Lucene queries**
+
+`src/test/java/org/.../JpaHibernateSearchTest :`
+```java
+package org.kostenko.example.wildfly.hibernatesearch;
+
+import java.util.List;
+import javax.persistence.EntityManager;
+import org.junit.Test;
+import javax.persistence.Persistence;
+import junit.framework.Assert;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.junit.BeforeClass;
+
+/**
+ * @author kostenko
+ */
+public class JpaHibernateSearchTest {
+
+    private static EntityManager entityManager;
+    private static FullTextEntityManager fullTextEntityManager;
+    private static QueryBuilder queryBuilder;
+
+    @BeforeClass
+    public static void init() {
+        entityManager = Persistence.createEntityManagerFactory("myDSTest").createEntityManager();
+        fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(BlogEntity.class).get();
+    }
+
+    @Test
+    public void shouldPersistBlogEntity() {
+        for (int i = 0; i < 1000; i++) {
+            BlogEntity blogEntity = new BlogEntity();
+            blogEntity.setTitle("Title" + i);
+            blogEntity.setBody("BodyBody Body" + i + " look at my horse my horse is a amazing " + i);
+            entityManager.getTransaction().begin();
+            entityManager.persist(blogEntity);
+            entityManager.getTransaction().commit();
+        }
+        Assert.assertEquals(1000, entityManager.createQuery("SELECT COUNT(b) FROM BlogEntity b", Number.class).getSingleResult().intValue());
+    }
+
+    /**
+     * Keyword Queries - searching for a specific word.
+     */
+    @Test
+    public void shouldSearchByKeywordQuery() throws Exception {
+
+        Query query = queryBuilder.keyword().onFields("title", "body").matching("Body999").createQuery();
+
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class); // wrap Lucene query in a javax.persistence.Query
+        List<BlogEntity> result = persistenceQuery.getResultList();// execute search
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals("Title999", result.get(0).getTitle());
+    }
+
+    /**
+     * Fuzzy Queries - we can define a limit of “fuzziness”
+     */
+    @Test
+    public void shouldSearchByFuzzyQuery() throws Exception {
+
+        Query query = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(2).withPrefixLength(0).onField("title").matching("TAtle999").createQuery();
+
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List<BlogEntity> result = persistenceQuery.getResultList();// execute search
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals("Title999", result.get(0).getTitle());
+    }
+
+    /**
+     * Wildcard Queries - queries for which a part of a word is unknown ('?' - single character, '*' - character sequence)
+     */
+    @Test
+    public void shouldSearchByWildcardQuery() throws Exception {
+
+        Query query = queryBuilder.keyword().wildcard().onField("title").matching("?itle*").createQuery();
+
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List<BlogEntity> result = persistenceQuery.getResultList();// execute search
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(1000, result.size());
+    }
+
+    /**
+     * Phrase Queries - search for exact or for approximate sentences
+     */
+    @Test
+    public void shouldSearchByPhraseQuery() throws Exception {
+
+        Query query = queryBuilder.phrase().withSlop(10).onField("body").sentence("look amazing horse 999").createQuery();
+
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List<BlogEntity> result = persistenceQuery.getResultList();
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals("Title999", result.get(0).getTitle());
+    }
+}
+```
+In the test above I used most basic use-cases. Please, refer to [official documentation](https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/) for advanced topics.

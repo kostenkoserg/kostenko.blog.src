@@ -7,12 +7,12 @@ status=published
 #### 1. Tags
 
 Jbake supports tagging out of the box. It means that engine will generate separate page for each tag. To enable this feature on your blog you need to change ``render.tags`` property in your ``jbake.properties`` file
-```
+```bash
 render.tags=true
 ```
 Next  modify template file depends on where you whant to reneder tags. For this blog I am using freemarker templates and made desition to put tags as part of menu bar. So, chages of my ``menu.ftl`` below:
 
-```
+```html
   <ul class="dropdown-menu">
       <#list tags as tag>
         <li><a href="${content.rootpath}${tag.uri}">${tag.name}</a></li>
@@ -27,7 +27,7 @@ Now let's talk about multilanguage support. It is pity, but Jbake does not suppo
 
 Instead of full copy  I did additional directory ``content_ru`` just with content.
 
-```
+```bash
 ├── assets  
 ├── content  
 ├── content_ru
@@ -41,7 +41,7 @@ In ``jbake.properies`` you can specify which content should be used.
 So, I  choosen english as default language and bake my blog in the next way:
 
 bakeblog.sh:
-```
+```bash
 #!/bin/bash
 
 # Helper script to bake the blog
@@ -64,7 +64,7 @@ mv jbake.properties.orig jbake.properties
 ```
 
 Now let’s add to the menu bar links to choose language:
-```
+```html
 <!-- switch language -->
 <ul class="nav navbar-nav navbar-right">
   <li><a href="/">en</a></li>
@@ -81,7 +81,7 @@ To enable [Google analytics](https://analytics.google.com) functionality on your
 * Get provided by GA code snippet
 * Paste provided snippet to your ``header.ftl`` as first block of ``<HEAD>`` section.
 
-```
+```html
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <head>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<YOUR_GA_ID>"></script>
