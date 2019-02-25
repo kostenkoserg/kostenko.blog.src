@@ -197,4 +197,7 @@ public class JpaHibernateSearchTest {
     }
 }
 ```
-In the test above I used most basic use-cases. Please, refer to [official documentation](https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/) for advanced topics.
+
+In the test above I used most basic use-cases. But it enough to feel how power Apache Lucene search engine is. And how easy it can be integrated with your application.  Please, refer to [official documentation](https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/) for advanced topics.
+
+Now let's see how to use Hibernate Search as Wildfly module. As i already noticed - Hibernate Search included in Wildfly since version 10. It means that activation of this functionality is automatic in case you are using at least one entity with `org.hibernate.search.annotations.Indexed`. So, all we need to show how it works together is implement simple web service and run on the server.
