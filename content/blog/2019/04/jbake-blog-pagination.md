@@ -1,4 +1,4 @@
-title=JBake blog pagintation
+title=JBake blog pagination
 date=2019-04-10
 type=post
 tags=JBake
