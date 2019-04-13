@@ -8,13 +8,19 @@
 				<hr/>
   		</#if>
   	</#list>
+
+		<#assign url = config.site_host>
+		<#if (config.content_folder == "content_ru")>
+			<#assign url = config.site_host + "/ru">
+		</#if>
+
 		<ul class="pager">
 			<#if (currentPageNumber > 1)>
-				<li class="previous"><a href="${config.site_host}/${(currentPageNumber==2)?then('', currentPageNumber-1)}">Previous</a></li>
+				<li class="previous"><a href="${url}/${(currentPageNumber==2)?then('', currentPageNumber-1)}">Previous</a></li>
 			</#if>
 			<li">Page: ${currentPageNumber}/${numberOfPages} (<a href="${content.rootpath}${config.archive_file}">archive</a>)</li>
 			<#if (currentPageNumber < numberOfPages)>
-				<li class="next"><a href="${config.site_host}/${currentPageNumber + 1}">Next</a></li>
+				<li class="next"><a href="${url}/${currentPageNumber + 1}">Next</a></li>
 			</#if>
 		</ul>
 <#include "footer.ftl">
