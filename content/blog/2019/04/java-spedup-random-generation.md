@@ -19,7 +19,34 @@ In Java we have **insecure**: `java.util.Random` and **secure**: `java.security.
 * **Seed Generation** - Random uses the system clock and, so can be reproduced. SecureRandom takes random data from your OS (hardware)
 * **Security** - Consequently, the java.util.Random class must not be used either for security-critical applications or for protecting sensitive data.
 
-As result of above, for described reasons using SecureRandom implementation. You may never get performance issues with it until you need for number of random numbers which can be generated per time unit. Especially on cloud environment because of poor entropy.
+As result of above, for described reasons using of SecureRandom much preferable. You may never get performance issues with it until you need for number of random numbers which can be generated per time unit. Especially on cloud environment because of poor entropy.
+
+Simple ussage and speed comparison example:
+```java
+public class RandomGenerationTest {
+
+    private static int count = 100_000_000;
+
+    public static void main(String... s) throws Exception {
+        System.out.println("Start...");
+        doGeneration(new Random());
+        doGeneration(new SecureRandom());
+    }
+
+    private static void doGeneration(Random random) {
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            random.nextInt();
+        }
+        time = System.currentTimeMillis() - time;
+        System.out.println(String.format("Generation of %s random numbers with %s time %s ms.", count, random.getClass().getName() ,time));
+    }
+}
+```
+```java
+Generation of 100000000 random numbers with java.util.Random time 930 ms.
+Generation of 100000000 random numbers with java.security.SecureRandom time 22036 ms.
+```
 
 By default SecureRandom will use random data from Linux kernel entropy pool `/dev/random`. So in case pool went empty -  next generation can be delayed for **several minutes**. You also can switch to the pseudo random number generator `/dev/urandom` which is can be must faster (non blocking) but little bit less secure.
 
