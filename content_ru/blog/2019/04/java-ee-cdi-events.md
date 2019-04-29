@@ -135,7 +135,7 @@ public class UserObserver {
       ....
     }
 
-    public void logout(@Observes @UserEvent(LOGOUT) String eventData) {
+    public void logout(@Observes @UserEvent(LOGIN) String eventData) {
       ....
     }
 }
