@@ -1,13 +1,12 @@
-title=Java EE CDI events. Dynamic qualifier.
+title=Java EE CDI события. Динамический квалификатор.
 date=2019-04-08
 type=post
 tags=Java EE, CDI
 status=published
 ~~~~~~
+Java ЕЕ предоставляет нам  хороший механизм для обработки событий, который является частью CDI для спецификации Java EE. Динамический CDI спецификатор может быть полезен для обработки событий, например, в domain driven архитектуре или при маршрутизации сообщений веб-сокета и т.д.
 
-Java EE provides us really nice mechanism for event processing. Which is part of the CDI for Java specification. Dynamic qualifier for CDI Events can be very useful, for example, in domain driven design, web socket messages routing or any other stuff depends on needs.
-
-Firing simple event looks like:  
+Генерация простого события:  
 ```java
 @Named
 public class MyEventSource {
@@ -20,7 +19,7 @@ public class MyEventSource {
     }
 }
 ```
-then event observer like:
+Наблюдатель события:
 ```java
 @Named
 public class MyEventObserver {
@@ -29,7 +28,7 @@ public class MyEventObserver {
     }
 }
 ```
-With CDI Qualifier (fancy annotation) you can specify which observer should serve the event
+Используя CDI спецификатор,  можно определить, какой наблюдатель должен обработать событие
 ```java
 @Qualifier
 @Retention(RUNTIME)
@@ -37,7 +36,7 @@ With CDI Qualifier (fancy annotation) you can specify which observer should serv
 public @interface Important {
 }
 ```
-For  example:
+Например:
 ```java
 @Named
 public class MyEventSource {
@@ -53,7 +52,7 @@ public class MyEventObserver {
   public void observeEvent(@Observes @Important String message){
     ...
 ```
-By default event will be fired in current transaction, but you can change this behavior with `@Observes` attribute  `during`
+По-умолчанию, событие будет обработано обсервером в текущей транзакции, но можно изменить это поведение,  используя `@Observes` атрибут  `during`
 ```java
 @Named
 public class TransactionEventObserver {
@@ -62,7 +61,7 @@ public class TransactionEventObserver {
     }
 }
 ```
-Available next values:
+Доступны следующие значения:
 
 * IN_PROGRESS
 * BEFORE_COMPLETION
@@ -70,9 +69,9 @@ Available next values:
 * AFTER_FAILURE
 * AFTER_SUCCESS
 
-Now, let's take a look on dynamically qualification of CDI event. In the example below we will create observer to serve user events like login, logout, registration etc from the abstract event source. As was noticed earlier, event can be fired from different sources depends on your needs.
+Теперь давайте посмотрим как можно квалифицировать CDI события динамически. В примере ниже мы создадим обсервер для обработки пользовательских событий (вход в систему, выход, регистрация и т.д.), полученных из некого абстрактного источника.
 
-So, first we need to create `Qualifier` with available events values
+Итак, сначала нам нужно создать `Qualifier` с доступными значениями событий
 ```java
 @Qualifier
 @Target({METHOD, FIELD, PARAMETER, TYPE})
@@ -82,7 +81,7 @@ public @interface UserEvent {
     Routes value();
 }
 ```
-where Routes is enum with available values, for example:
+где Routes - это enum с доступными значениями, например:
 ```java
 public enum Routes {
   LOGIN,
@@ -90,7 +89,7 @@ public enum Routes {
   REGISTRATION
 }
 ```
-Then we need to create child class of `javax.enterprise.util.AnnotationLiteral` to possibility of inline instantiation of annotation type instance.
+Потом нам нужно создать дочерний от `javax.enterprise.util.AnnotationLiteral` класс  для возможности использования квалификатора динамически.
 ```java
 public class UserEventBinding extends AnnotationLiteral<UserEvent> implements UserEvent {
 
@@ -106,7 +105,7 @@ public class UserEventBinding extends AnnotationLiteral<UserEvent> implements Us
     }
 }
 ```
-Now, let's fire event with dynamically observer selection
+Теперь давайте сгенерируем событие, используя динамический выбор наблюдателей
 ```java
 @Named
 public class UserEventSource {
@@ -119,7 +118,7 @@ public class UserEventSource {
     }
 }
 ```
-So, time to show how our Observer looks like
+Время показать, как выглядит наш Observer.
 ```java
 import static Routes.*;
 ...
@@ -135,10 +134,10 @@ public class UserObserver {
       ....
     }
 
-    public void logout(@Observes @UserEvent(LOGIN) String eventData) {
+    public void logout(@Observes @UserEvent(LOGOUT) String eventData) {
       ....
     }
 }
 ```
 
-P.S. From Java EE 8 with CDI 2.0 you can use **asynchronous CDI Events** whith `fireAsync` method and  `@ObservesAsync` annotation...
+P.S. В Java EE 8 с CDI 2.0 вы можете использовать асинхронные события CDI с помощью метода `fireAsync` и аннотации `@ObserveAsync`
