@@ -6,6 +6,7 @@ status=published
 ~~~~~~
 
 Well designed API is very important in case you expect your API will use someone else instead of just you. To build readable and writable DSL(domain specific language) in Java usually uses Builder pattern with few simple rules:
+
 * Think twice about names for methods
 * Restrict available values for each step
 
