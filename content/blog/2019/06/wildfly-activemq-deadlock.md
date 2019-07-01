@@ -23,7 +23,7 @@ Found a total of 1 deadlock.
 
 Below is part of official documentation:
 
-"If thread-pool-max-size is set to a positive integer greater than zero, the thread pool is bounded. If requests come in and there are no free threads available in the pool, requests will block until a thread becomes available. It is recommended that a bounded thread pool be used with caution since it can lead to **deadlock situations** if the upper bound is configured too low."
+>"If thread-pool-max-size is set to a positive integer greater than zero, the thread pool is bounded. If requests come in and there are no free threads available in the pool, requests will block until a thread becomes available. It is recommended that a bounded thread pool be used with caution since it can lead to **deadlock situations** if the upper bound is configured too low."
 
 So, solution is:
 
