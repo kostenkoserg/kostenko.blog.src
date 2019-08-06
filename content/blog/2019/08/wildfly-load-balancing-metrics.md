@@ -1,5 +1,5 @@
 title=Wildfly. Configure load balancing metrics
-date=2019-08-16
+date=2019-08-06
 type=post
 tags=Wildfly
 status=published
