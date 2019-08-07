@@ -1,5 +1,5 @@
 title=Real Jakarta EE integration tests with Arquillian
-date=2019-07-12
+date=2019-08-10
 type=post
 tags=Jakarta EE,Java EE,Arquillian
 status=draft
@@ -11,3 +11,6 @@ Why it is so important ?
 
  * Business logic can interact with resources or sub-system provided by container
  * Declarative services (Transactions, messaging, CDI, JAX-RS etc) get applied to the business component at runtime
+ * What you test is what you run
+
+So, lets implement classic Jakarta EE application  
