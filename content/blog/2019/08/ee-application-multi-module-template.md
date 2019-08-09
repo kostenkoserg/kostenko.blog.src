@@ -1,4 +1,4 @@
-title=Jakarta EE applications multi module gradle template
+title=Jakarta EE application multi module gradle template
 date=2019-08-08
 type=post
 tags=Jakarta EE,Gradle
@@ -77,8 +77,8 @@ In turn, main logic `API` contents from `Interface` and `DTO`:
 ```java
 public interface TestService {
 
-  String TOURNAMENT_SERVICE_NAME = "test-service";
-  String TOURNAMENT_SERVICE_JNDI ="java:global/module2-core/" + TOURNAMENT_SERVICE_NAME;
+  String TEST_SERVICE_NAME = "test-service";
+  String TEST_SERVICE_JNDI ="java:global/module2-core/" + TEST_SERVICE_NAME;
 
   SomethingDto doSomething();
 }
@@ -86,23 +86,14 @@ public interface TestService {
 `SomethingDto.java:`
 ```java
 public class SomethingDto implements Serializable{
-
-    private final String message;
-
-    public SomethingDto(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+  ...
 }
 ```
 In the end, main logic `Core` contents from the logic that implements API:
 `TestServiceImpl.java`
 ```java
 @Remote(TestService.class)
-@Stateless(name = TestService.TOURNAMENT_SERVICE_NAME)
+@Stateless(name = TestService.TEST_SERVICE_NAME)
 public class TestServiceImpl implements TestService {
 
     @PersistenceContext
@@ -115,5 +106,7 @@ public class TestServiceImpl implements TestService {
     }
 }
 ```
+
+Described Jakarta EE application architecture allows us enjoy all power of EE with absolutely transparent inter module interactions and, the same time, stay close to micro service design - as we have no limits with using one container for all modules.
 
 Source code of this demo available on [GitHub](https://github.com/kostenkoserg/ee-application-multi-module-gradle-template)
