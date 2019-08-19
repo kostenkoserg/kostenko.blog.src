@@ -1,5 +1,5 @@
 title=Real Jakarta EE integration tests with Arquillian
-date=2019-08-10
+date=2019-08-25
 type=post
 tags=Jakarta EE,Java EE,Arquillian
 status=draft
