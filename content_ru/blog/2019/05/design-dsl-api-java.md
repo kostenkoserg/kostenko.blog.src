@@ -1,6 +1,10 @@
-title=Разработка DSL API на Java date=2019-05-27 type=post tags=Java, API status=published
+title=Разработка DSL API на Java
+date=2019-05-27
+type=post
+tags=Java, API
+status=published
+~~~~~~
 
-```
 Хорошо разработанный API - очень важен, так как его будут использовать не только вы, но и кто-то другой, если вы ожидаете. По-этому, что бы построить читаемый и хорошо написанный DLS(domain specific language) на Java, обычно используют паттерн Builder с несколькими простыми правилами:
 
 * Думай дважды про названия для методов;
