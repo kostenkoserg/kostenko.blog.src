@@ -1,4 +1,4 @@
-title=RestEasy javax.ws.rs.client.Client ThreadPool leak
+title=JAX-RS Client ThreadPool leak
 date=2019-10-04
 type=post
 tags=WildFly,JAX-RS
@@ -28,10 +28,14 @@ class CustomThreadFactory implements ThreadFactory {
 }
 ```
 
-So, after many time of investigation and "heap walking"(paths to GC root) i found few `Executors$DefaultThreadFactory` like
+
+So, after many times of investigation and "heap walking"(paths to GC root) i found few `Executors$DefaultThreadFactory` like
+
 ![jax-rs thread leak](/img/2019-10-thraed-leak-1.png)
 
+
 what made me see the code with REST services invocations. Something like
+
 ```java
 public void doCall() {
     Client client = ClientBuilder.newClient();
