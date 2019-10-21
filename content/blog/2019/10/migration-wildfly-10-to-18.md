@@ -7,4 +7,4 @@ status=published
 
 Usually vendors declares easy migration, provides how-to documentation and even migration tools. But depends on complexity of your application you can stuck with some compatibility issues. Below i will explain my Wildfliy 10 to Wildfliy 18 migration steps.
 
-So, first of all you can use provided by WF [migration tool](https://github.com/wildfly/wildfly-server-migration) to migrate configuration files to the needed release.  
+First of all you can use provided by WF [migration tool](https://github.com/wildfly/wildfly-server-migration) to migrate configuration files and compatible modules to the needed release.  
