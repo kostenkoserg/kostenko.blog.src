@@ -1,5 +1,5 @@
 title=Migration from Wildfly 10 to Wildfly 18
-date=2019-10-18
+date=2019-10-22
 type=post
 tags=Wildfly
 status=published
@@ -32,7 +32,8 @@ Error above related to the Hibernate 5.2 [performance improvement](https://vladm
 in your **persistence.xml**
 
 Issue #2:
-```
+
+```java
 java.lang.IllegalArgumentException: ArquillianServletRunner not found. Could not determine ContextRoot from ProtocolMetadata, please contact DeployableContainer developer.
 ```
 In case using Arquillian you need just update version `org.wildfly.arquillian:wildfly-arquillian-container-managed` to version `2.2.0.Final`
@@ -42,4 +43,41 @@ Issue #3:
 org.jboss.weld.exceptions.UnsupportedOperationException:
   at org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:49)
 ```
-Seems to old Weld [bug
+Seems to old [BUG](https://issues.jboss.org/browse/WELD-2407) happened and Weld does not support Java 8 default methods completely. So, pity but same refactoring here is needed.
+
+Issue #4:
+```java
+WFLYRS0018: Explicit usage of Jackson annotation in a JAX-RS deployment; the system will disable JSON-B processing for the current deployment. Consider setting the 'resteasy.preferJacksonOverJsonB' property to 'false' to restore JSON-B.
+...
+javax.ws.rs.client.ResponseProcessingException: javax.ws.rs.ProcessingException: RESTEASY008200: JSON Binding deserialization error  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.extractResult(ClientInvocation.java:156)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.invoke(ClientInvocation.java:473)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder.get(ClientInvocationBuilder.java:195)  
+```
+Since latest versions, WF uses `org.eclipse.yasson` as **JSON-B** provider. It can provoke some compatibility problems in case using different  implementations. Solution here is refactoring according to the JSON-B specification or excluding `resteasy-json-binding-provider` from application class loader by providing `WEB-INF/jboss-deployment-structure.xml`:
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>
+```
+or in case using EARs, do exclusion from submodules like
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </deployment>
+    <sub-deployment name="module-1.jar">
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </sub-deployment>    
+</jboss-deployment-structure>
+```
