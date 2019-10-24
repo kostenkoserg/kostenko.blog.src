@@ -81,3 +81,6 @@ or in case using EARs, do exclusion from submodules like
     </sub-deployment>    
 </jboss-deployment-structure>
 ```
+
+Issue #5:
+According to the fixed Hibernate [BUG](https://hibernate.atlassian.net/browse/HHH-11278), for now JPA call `setMaxResult(0)` **returns empty List** instead of **ALL** elements in previous versions. So, just check it and do some refactoring if needed.
