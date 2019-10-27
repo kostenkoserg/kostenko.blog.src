@@ -11,6 +11,7 @@
 				<a href="${url}/${post.uri}"><h1><#escape x as x?xml>${post.title}</#escape></h1></a>
 				<p>${post.date?string("dd MMMM yyyy")}</p>
   			<p>${post.body}</p>
+				<p class="text-right"><a href="${url}/${post.uri}#disqus_thread" data-disqus-identifier="${post.uri}">Comments</a></p>
 				<hr/>
   		</#if>
   	</#list>

@@ -15,5 +15,7 @@
     <script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/bootstrap.min.js"></script>
     <!--script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/prettify.js"></script-->
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
   </body>
 </html>
