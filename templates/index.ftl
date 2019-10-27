@@ -1,4 +1,4 @@
-<#include "header.ftl">
+<<#include "header.ftl">
 	<#include "menu.ftl">
 
 	<#assign url = config.site_host>
