@@ -16,21 +16,22 @@ In case intensive usage it can collect lot of data and as result provoke some ap
     <step id="batchGarbageCollector.step1">
         <batchlet ref="org.jberet.repository.PurgeBatchlet">
             <properties>
-            <property name="sql" value="#{jobParameters['sql']}"/>
-            <property name="sqlFile" value="#{jobParameters['sqlFile']}"/>
-            <property name="jobExecutionSelector" value="#{jobParameters['jobExecutionSelector']}"/>
-            <property name="keepRunningJobExecutions" value="#{jobParameters['keepRunningJobExecutions']}"/>
-            <property name="purgeJobsByNames" value="#{jobParameters['purgeJobsByNames']}"/>
-            <property name="jobExecutionIds" value="#{jobParameters['jobExecutionIds']}"/>
-            <property name="numberOfRecentJobExecutionsToKeep" value="#{jobParameters['numberOfRecentJobExecutionsToKeep']}"/>
-            <property name="jobExecutionIdFrom" value="#{jobParameters['jobExecutionIdFrom']}"/>
-            <property name="jobExecutionIdTo" value="#{jobParameters['jobExecutionIdTo']}"/>
-            <property name="withinPastMinutes" value="#{jobParameters['withinPastMinutes']}"/>
-            <property name="jobExecutionEndTimeFrom" value="#{jobParameters['jobExecutionEndTimeFrom']}"/>
-            <property name="jobExecutionEndTimeTo" value="#{jobParameters['jobExecutionEndTimeTo']}"/>
-            <property name="batchStatuses" value="#{jobParameters['batchStatuses']}"/>
-            <property name="exitStatuses" value="#{jobParameters['exitStatuses']}"/>
-            <property name="jobExecutionsByJobNames" value="#{jobParameters['jobExecutionsByJobNames']}"/>            </properties>
+                <property name="sql" value="#{jobParameters['sql']}"/>
+                <property name="sqlFile" value="#{jobParameters['sqlFile']}"/>
+                <property name="jobExecutionSelector" value="#{jobParameters['jobExecutionSelector']}"/>
+                <property name="keepRunningJobExecutions" value="#{jobParameters['keepRunningJobExecutions']}"/>
+                <property name="purgeJobsByNames" value="#{jobParameters['purgeJobsByNames']}"/>
+                <property name="jobExecutionIds" value="#{jobParameters['jobExecutionIds']}"/>
+                <property name="numberOfRecentJobExecutionsToKeep" value="#{jobParameters['numberOfRecentJobExecutionsToKeep']}"/>
+                <property name="jobExecutionIdFrom" value="#{jobParameters['jobExecutionIdFrom']}"/>
+                <property name="jobExecutionIdTo" value="#{jobParameters['jobExecutionIdTo']}"/>
+                <property name="withinPastMinutes" value="#{jobParameters['withinPastMinutes']}"/>
+                <property name="jobExecutionEndTimeFrom" value="#{jobParameters['jobExecutionEndTimeFrom']}"/>
+                <property name="jobExecutionEndTimeTo" value="#{jobParameters['jobExecutionEndTimeTo']}"/>
+                <property name="batchStatuses" value="#{jobParameters['batchStatuses']}"/>
+                <property name="exitStatuses" value="#{jobParameters['exitStatuses']}"/>
+                <property name="jobExecutionsByJobNames" value="#{jobParameters['jobExecutionsByJobNames']}"/>       
+            </properties>
         </batchlet>
     </step>
 </job>
