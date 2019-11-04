@@ -1,4 +1,4 @@
-title=Jakarta Batch garbage collection on Wildfly (Jberet)
+title=Jakarta Batch garbage collection with Jberet
 date=2019-11-04
 type=post
 tags=Jakarta, Batch, Wildfly, Jberet
@@ -16,23 +16,21 @@ In case intensive usage it can collect lot of data and as result provoke some ap
     <step id="batchGarbageCollector.step1">
         <batchlet ref="org.jberet.repository.PurgeBatchlet">
             <properties>
-                <property name="sql" value="#{jobParameters['sql']}"/>
                 <property name="sqlFile" value="#{jobParameters['sqlFile']}"/>
-                <property name="jobExecutionSelector" value="#{jobParameters['jobExecutionSelector']}"/>
-                <property name="keepRunningJobExecutions" value="#{jobParameters['keepRunningJobExecutions']}"/>
-                <property name="purgeJobsByNames" value="#{jobParameters['purgeJobsByNames']}"/>
-                <property name="jobExecutionIds" value="#{jobParameters['jobExecutionIds']}"/>
-                <property name="numberOfRecentJobExecutionsToKeep" value="#{jobParameters['numberOfRecentJobExecutionsToKeep']}"/>
-                <property name="jobExecutionIdFrom" value="#{jobParameters['jobExecutionIdFrom']}"/>
-                <property name="jobExecutionIdTo" value="#{jobParameters['jobExecutionIdTo']}"/>
-                <property name="withinPastMinutes" value="#{jobParameters['withinPastMinutes']}"/>
-                <property name="jobExecutionEndTimeFrom" value="#{jobParameters['jobExecutionEndTimeFrom']}"/>
-                <property name="jobExecutionEndTimeTo" value="#{jobParameters['jobExecutionEndTimeTo']}"/>
-                <property name="batchStatuses" value="#{jobParameters['batchStatuses']}"/>
-                <property name="exitStatuses" value="#{jobParameters['exitStatuses']}"/>
-                <property name="jobExecutionsByJobNames" value="#{jobParameters['jobExecutionsByJobNames']}"/>       
             </properties>
         </batchlet>
     </step>
 </job>
 ```
+From the documentation `PurgeBatchlet` supports rich set of properties and looks pretty good, **BUT** on practice lot of them does not work as expected. I tried `numberOfRecentJobExecutionsToKeep` and `batchStatuses` on both WF repositories (inMemory and JDBC) and on both of them **it does not work** for me.
+
+I am getting output like below, but garbage still was with me :(
+```java
+...
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256804
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256806
+...
+```
+Good news is, that in case using JDBC repository job parameter `sqlFile` works as expected executes provided SQL... without any log outputs.
+
+Source code of test application available on [GitHub](https://github.com/kostenkoserg/ee-batch-processing-examples)
