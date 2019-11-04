@@ -31,6 +31,6 @@ INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runt
 INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256806
 ...
 ```
-Good news is, that in case using JDBC repository job parameter `sqlFile` works as expected executes provided SQL... without any log outputs.
+Good news is, that in case using JDBC repository job parameter `sqlFile` works as expected and PurgeBatchlet executes provided SQL... without any log outputs.
 
 Source code of test application available on [GitHub](https://github.com/kostenkoserg/ee-batch-processing-examples)
