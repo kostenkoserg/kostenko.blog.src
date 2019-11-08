@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>Wildfly domain mode cluster and load balancing from the box</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <!--link href="../../../css/prettify.css" rel="stylesheet"-->
+    <link href="../../../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../../../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../../../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../../../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../../../tags/Jetty.html">Jetty</a></li>
+										<li><a href="../../../tags/Performance.html">Performance</a></li>
+										<li><a href="../../../tags/Gradle.html">Gradle</a></li>
+										<li><a href="../../../tags/API.html">API</a></li>
+										<li><a href="../../../tags/JPA.html">JPA</a></li>
+										<li><a href="../../../tags/Jakarta.html">Jakarta</a></li>
+										<li><a href="../../../tags/JMX.html">JMX</a></li>
+										<li><a href="../../../tags/Jakarta EE.html">Jakarta EE</a></li>
+										<li><a href="../../../tags/Linux.html">Linux</a></li>
+										<li><a href="../../../tags/JBake.html">JBake</a></li>
+										<li><a href="../../../tags/JMS.html">JMS</a></li>
+										<li><a href="../../../tags/Jenkins.html">Jenkins</a></li>
+										<li><a href="../../../tags/Jberet.html">Jberet</a></li>
+										<li><a href="../../../tags/SQL.html">SQL</a></li>
+										<li><a href="../../../tags/CI.html">CI</a></li>
+										<li><a href="../../../tags/JakartaEE.html">JakartaEE</a></li>
+										<li><a href="../../../tags/Hibernate.html">Hibernate</a></li>
+										<li><a href="../../../tags/WildFly.html">WildFly</a></li>
+										<li><a href="../../../tags/Java.html">Java</a></li>
+										<li><a href="../../../tags/Batch.html">Batch</a></li>
+										<li><a href="../../../tags/JAX-RS.html">JAX-RS</a></li>
+										<li><a href="../../../tags/CDI.html">CDI</a></li>
+										<li><a href="../../../tags/GitHub.html">GitHub</a></li>
+										<li><a href="../../../tags/Wildfly.html">Wildfly</a></li>
+										<li><a href="../../../tags/Java EE.html">Java EE</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../../../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+	<div class="page-header">
+		<h1>Wildfly domain mode cluster and load balancing from the box</h1>
+	</div>
+
+	<p><em>15 April 2019</em></p>
+
+	<p><p>Wildfly Application Server provide us two possible modes to setup cluster environment for the Java EE applications.</p>
+<ol>
+<li>
+<p><strong>Standalone mode</strong> - every standalone instance has its own management interface and configuration. You can manage one instance at a time. Configuration placed in <code>standalone.xml</code> file.</p>
+</li>
+<li>
+<p><strong>Domain mode</strong> - all Wildfly instances manage by special orchestration process called <code>domain controller</code>. Using domain controller you can manage group of servers. Also you can mange groups as well. Each servers group can has its own configuration, deployments etc. Configuration placed in <code>domain.xml</code> and <code>host.xml</code> files.<br />
+Example of a Wildfly server groups:<br />
+<img src="/img/2019-04-wildfly-cluster-domain-mode.png" alt="wildfly-cluster-domain-mode" /></p>
+</li>
+</ol>
+<p>From the version 10 Wildfly adds support for using the <code>Undertow</code> subsystem as a load balancer. So, now all we need to build Java EE clustered infrastructure is Wildfly only. Let's do it.</p>
+<p>Download latest version of application server from the <a href="https://wildfly.org/downloads/">https://wildfly.org/downloads/</a> and unzip distributive after. To run Wildfly in domain mode, please execute:</p>
+<pre><code class="language-java">kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./domain.sh
+</code></pre>
+<p>Connect to the Wildfly CLI concole</p>
+<pre><code class="language-java">kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./jboss-cli.sh -c
+[domain@localhost:9990 /]
+</code></pre>
+<p>By default Wildfly has preconfigured server groups <code>main-server-group</code> and <code>other-server-group</code>, so we need cleanup existing servers:</p>
+<pre><code class="language-java">:stop-servers(blocking=true)
+/host=master/server-config=server-one:remove
+/host=master/server-config=server-two:remove
+/host=master/server-config=server-three:remove
+/server-group=main-server-group:remove
+/server-group=other-server-group:remove
+</code></pre>
+<p>Create new server group and servers, using the <code>full-ha</code> profile so <code>mod_cluster</code> support is included:</p>
+<pre><code class="language-java">/server-group=backend-servers:add(profile=full-ha, socket-binding-group=full-ha-sockets)
+/host=master/server-config=backend1:add(group=backend-servers, socket-binding-port-offset=100)
+/host=master/server-config=backend2:add(group=backend-servers, socket-binding-port-offset=200)
+
+#start the backend servers
+/server-group=backend-servers:start-servers(blocking=true)
+
+#add system properties (so we can tell them apart)
+/host=master/server-config=backend1/system-property=server.name:add(boot-time=false, value=backend1)
+/host=master/server-config=backend2/system-property=server.name:add(boot-time=false, value=backend2)
+</code></pre>
+<p>Then  set up the server group for load balancer</p>
+<pre><code class="language-java">/server-group=load-balancer:add(profile=load-balancer, socket-binding-group=load-balancer-sockets)
+/host=master/server-config=load-balancer:add(group=load-balancer)
+/socket-binding-group=load-balancer-sockets/socket-binding=modcluster:write-attribute(name=interface, value=public)
+/server-group=load-balancer:start-servers
+</code></pre>
+<p>Now let's develop simple JAX-RS endpoint to show how it works:</p>
+<pre><code class="language-java">@Path(&quot;/clusterdemo&quot;)
+@Stateless
+public class ClusterDemoEndpoint {
+
+    @GET
+    @Path(&quot;/serverinfo&quot;)
+    public Response getServerInfo() {
+
+        return Response.ok().entity(&quot;Server: &quot; + System.getProperty(&quot;server.name&quot;)).build();
+    }
+}
+</code></pre>
+<p>Build project and deploy it to the <code>backend-servers</code> group:</p>
+<pre><code class="language-java">[domain@localhost:9990 /] deploy ee-jax-rs-examples.war --server-groups=backend-servers
+</code></pre>
+<p>And check the result by <code>http://localhost:8080/ee-jax-rs-examples/clusterdemo/serverinfo</code> :<br />
+<img src="/img/2019-04-wildfly-cluster-domain-mode-1-2.gif" alt="wildfly-cluster-domain-mode-1-2" /></p>
+<p>Now we can easily add  servers to the group at runtime and requests will balancing automatically:</p>
+<pre><code class="language-java">[domain@localhost:9990 /] /host=master/server-config=backend3:add(group=backend-servers, socket-binding-port-offset=300)
+[domain@localhost:9990 /] /host=master/server-config=backend3/system-property=server.name:add(boot-time=false, value=backend3)
+[domain@localhost:9990 /] /server-group=backend-servers/:start-servers(blocking=true)
+</code></pre>
+<p><img src="/img/2019-04-wildfly-cluster-domain-mode-1-2-3.gif" alt="wildfly-cluster-domain-mode-1-2-3" /></p>
+<p>That is it!<br />
+Source code available on GitHub:  <a href="https://github.com/kostenkoserg/ee-jax-rs-examples/blob/master/src/main/java/org/kostenko/example/jaxrs/ClusterDemoEndpoint.java">Demo application</a>,  <a href="https://github.com/kostenkoserg/wildfly-configuration-examples/blob/master/wildfly-domain-mode-cluster.cli">Wildlfly CLI </a></p>
+</p>
+
+	<hr />
+	<div class="row">
+	<div class="box">
+
+	<div id="disqus_thread"></div>
+	<script>
+
+	var disqus_config = function () {
+	this.page.url = 'https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html';
+	this.page.identifier = 'blog/2019/04/wildfly-cluster-domain-mode.html';
+	};
+
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = 'https://kostenko-org.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+	})();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div>
+</div>
+
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.3</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <!--script src="../../../js/prettify.js"></script-->
+		<script src="../../../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

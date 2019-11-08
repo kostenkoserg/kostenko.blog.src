@@ -1,0 +1,1619 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JBake</title>
+    <link>https://kostenko.org</link>
+    <atom:link href="https://kostenko.org/feed.xml" rel="self" type="application/rss+xml" />
+    <description>JBake Bootstrap Template</description>
+    <language>en-gb</language>
+    <pubDate>Fri, 8 Nov 2019 17:55:25 +0200</pubDate>
+    <lastBuildDate>Fri, 8 Nov 2019 17:55:25 +0200</lastBuildDate>
+
+    <item>
+      <title>Never use Java primitives for math calculation</title>
+      <link>https://kostenko.org/blog/2019/11/java-primitive-types-calculation.html</link>
+      <pubDate>Fri, 8 Nov 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/11/java-primitive-types-calculation.html</guid>
+      	<description>
+	&lt;p&gt;This is well knowing stuff about representation of &lt;a href=&quot;https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html&quot;&gt;Floating point types in java&lt;/a&gt;, but time from time each developer can forget about&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Test
+public void primitiveTest() {
+
+    // right way:
+    BigDecimal bgDcml = BigDecimal.valueOf(100000f).multiply(BigDecimal.valueOf(750f)).multiply(BigDecimal.valueOf(15f)).setScale(0);
+    BigDecimal bgDcml2 = BigDecimal.valueOf(0.04d).multiply(BigDecimal.valueOf(15.0d));
+
+    // wrong way:
+    float flt = 100000f * 750f * 15f;
+    float flt2 = 0.04f * 15.0f;
+
+    System.out.println(&amp;quot;BigDecimal (correct): &amp;quot; + bgDcml);
+    System.out.println(String.format(&amp;quot;Float (incorrcect): %s (%s)&amp;quot;, flt, new BigDecimal(flt)));
+    System.out.println(&amp;quot;BigDecimal (correct): &amp;quot; + bgDcml2);
+    System.out.println(String.format(&amp;quot;Float (incorrcect): %s&amp;quot;, flt2));
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+BigDecimal (correct): 1125000000
+Float (incorrcect): 1.12499994E9 (1124999936)
+BigDecimal (correct): 0.600
+Float (incorrcect): 0.59999996
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Jakarta Batch garbage collection with Jberet</title>
+      <link>https://kostenko.org/blog/2019/11/jakarta-batch-garbage-collection-jberet.html</link>
+      <pubDate>Mon, 4 Nov 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/11/jakarta-batch-garbage-collection-jberet.html</guid>
+      	<description>
+	&lt;p&gt;To implement Jakarta Batch Specification Wildfly uses JBeret as implementation of JSR 352 (Batch Applications for the Java Platform). During processing, last one persists some working data to the memory, JDBC or another repository depends on configuration.&lt;/p&gt;
+&lt;p&gt;In case intensive usage it can collect lot of data and as result provoke some application server performance issues. To cleanup  &lt;strong&gt;unwanted job data&lt;/strong&gt; you can design your own solution or use provided by Jberet &lt;a href=&quot;https://docs.jboss.org/jberet/1.3.0.Final/javadoc/jberet-core/org/jberet/repository/PurgeBatchlet.html&quot;&gt;org.jberet.repository.PurgeBatchlet&lt;/a&gt; in standard way:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;job id=&amp;quot;batchGarbageCollector&amp;quot; xmlns=&amp;quot;http://xmlns.jcp.org/xml/ns/javaee&amp;quot;
+     xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+     xsi:schemaLocation=&amp;quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/jobXML_1_0.xsd&amp;quot;
+     version=&amp;quot;1.0&amp;quot;&amp;gt;
+    &amp;lt;step id=&amp;quot;batchGarbageCollector.step1&amp;quot;&amp;gt;
+        &amp;lt;batchlet ref=&amp;quot;org.jberet.repository.PurgeBatchlet&amp;quot;&amp;gt;
+            &amp;lt;properties&amp;gt;
+                &amp;lt;property name=&amp;quot;sqlFile&amp;quot; value=&amp;quot;#{jobParameters[&apos;sqlFile&apos;]}&amp;quot;/&amp;gt;
+            &amp;lt;/properties&amp;gt;
+        &amp;lt;/batchlet&amp;gt;
+    &amp;lt;/step&amp;gt;
+&amp;lt;/job&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;From the documentation &lt;code&gt;PurgeBatchlet&lt;/code&gt; supports rich set of properties and looks pretty good, &lt;strong&gt;BUT&lt;/strong&gt; on practice lot of them does not work as expected. I tried &lt;code&gt;numberOfRecentJobExecutionsToKeep&lt;/code&gt; and &lt;code&gt;batchStatuses&lt;/code&gt; on both WF repositories (inMemory and JDBC) and on both of them &lt;strong&gt;it does not work&lt;/strong&gt; for me.&lt;/p&gt;
+&lt;p&gt;I am getting output like below, but garbage still was with me :(&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;...
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256804
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256806
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Good news is, that in case using JDBC repository job parameter &lt;code&gt;sqlFile&lt;/code&gt; works as expected and PurgeBatchlet executes provided SQL... without any log outputs.&lt;/p&gt;
+&lt;p&gt;Source code of test application available on &lt;a href=&quot;https://github.com/kostenkoserg/ee-batch-processing-examples&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Migration from Wildfly 10 to Wildfly 18</title>
+      <link>https://kostenko.org/blog/2019/10/migration-wildfly-10-to-18.html</link>
+      <pubDate>Tue, 22 Oct 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/10/migration-wildfly-10-to-18.html</guid>
+      	<description>
+	&lt;p&gt;Usually vendors declares easy migration, provides how-to documentation and even migration tools. But depends on complexity of your application you can stuck with some compatibility issues. Below i will explain my Wildfliy 10 to Wildfliy 18 migration steps.&lt;/p&gt;
+&lt;p&gt;First of all you can use provided by WF &lt;a href=&quot;https://github.com/wildfly/wildfly-server-migration&quot;&gt;migration tool&lt;/a&gt; to migrate configuration files and compatible modules to the needed release:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;git clone https://github.com/wildfly/wildfly-server-migration.git
+cd ./wildfly-server-migration/
+mvn clean install
+cd ./dist/standalone/target/
+unzip jboss-server-migration-1.8.0.Final-SNAPSHOT.zip
+cd ./jboss-server-migration
+
+./jboss-server-migration.sh -s /opt/wildfly-10.1.0.Final -t /opt/wildfly-18.0.0.Final/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let&apos;s see application level migration issues:&lt;/p&gt;
+&lt;p&gt;Issue #1:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Caused by: java.lang.IllegalArgumentException: org.hibernate.hql.internal.ast.QuerySyntaxException: Invalid path: &apos;org.kostenko.STATUS.ACTIVE&apos;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Error above related to the Hibernate 5.2 &lt;a href=&quot;https://vladmihalcea.com/the-performance-penalty-of-class-forname-when-parsing-jpql-and-criteria-queries/&quot;&gt;performance improvement&lt;/a&gt; that avoids unnecessary calls to Class.forName(). Solution here is &lt;strong&gt;using Java Naming conventions for a constant.&lt;/strong&gt; (for example rename STATUS to Status) or in case  using non-conventional Java constants set the&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;property name=&amp;quot;hibernate.query.conventional_java_constants&amp;quot; value=&amp;quot;false&amp;quot;/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;in your &lt;strong&gt;persistence.xml&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Issue #2:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;java.lang.IllegalArgumentException: ArquillianServletRunner not found. Could not determine ContextRoot from ProtocolMetadata, please contact DeployableContainer developer.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In case using Arquillian you need just update version &lt;code&gt;org.wildfly.arquillian:wildfly-arquillian-container-managed&lt;/code&gt; to version &lt;code&gt;2.2.0.Final&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Issue #3:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;org.jboss.weld.exceptions.UnsupportedOperationException:
+  at org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:49)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Seems to old &lt;a href=&quot;https://issues.jboss.org/browse/WELD-2407&quot;&gt;BUG&lt;/a&gt; happened and Weld does not support Java 8 default methods completely. So, pity but same refactoring here is needed.&lt;/p&gt;
+&lt;p&gt;Issue #4:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;WFLYRS0018: Explicit usage of Jackson annotation in a JAX-RS deployment; the system will disable JSON-B processing for the current deployment. Consider setting the &apos;resteasy.preferJacksonOverJsonB&apos; property to &apos;false&apos; to restore JSON-B.
+...
+javax.ws.rs.client.ResponseProcessingException: javax.ws.rs.ProcessingException: RESTEASY008200: JSON Binding deserialization error  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.extractResult(ClientInvocation.java:156)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.invoke(ClientInvocation.java:473)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder.get(ClientInvocationBuilder.java:195)  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Since latest versions, WF uses &lt;code&gt;org.eclipse.yasson&lt;/code&gt; as &lt;strong&gt;JSON-B&lt;/strong&gt; provider. It can provoke some compatibility problems in case using different  implementations. Solution here is refactoring according to the JSON-B specification or excluding &lt;code&gt;resteasy-json-binding-provider&lt;/code&gt; from application class loader by providing &lt;code&gt;WEB-INF/jboss-deployment-structure.xml&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;jboss-deployment-structure&amp;gt;
+    &amp;lt;deployment&amp;gt;
+        &amp;lt;exclusions&amp;gt;
+            &amp;lt;module name=&amp;quot;org.jboss.resteasy.resteasy-json-binding-provider&amp;quot;/&amp;gt;
+        &amp;lt;/exclusions&amp;gt;
+    &amp;lt;/deployment&amp;gt;
+&amp;lt;/jboss-deployment-structure&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or in case using EARs, do exclusion from submodules like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;jboss-deployment-structure&amp;gt;
+    &amp;lt;deployment&amp;gt;
+        &amp;lt;exclusions&amp;gt;
+            &amp;lt;module name=&amp;quot;org.jboss.resteasy.resteasy-json-binding-provider&amp;quot;/&amp;gt;
+        &amp;lt;/exclusions&amp;gt;
+    &amp;lt;/deployment&amp;gt;
+    &amp;lt;sub-deployment name=&amp;quot;module-1.jar&amp;quot;&amp;gt;
+        &amp;lt;exclusions&amp;gt;
+            &amp;lt;module name=&amp;quot;org.jboss.resteasy.resteasy-json-binding-provider&amp;quot;/&amp;gt;
+        &amp;lt;/exclusions&amp;gt;
+    &amp;lt;/sub-deployment&amp;gt;    
+&amp;lt;/jboss-deployment-structure&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Issue #5:&lt;br /&gt;
+According to the fixed Hibernate &lt;a href=&quot;https://hibernate.atlassian.net/browse/HHH-11278&quot;&gt;BUG&lt;/a&gt;, for now JPA call &lt;code&gt;setMaxResult(0)&lt;/code&gt; &lt;strong&gt;returns empty List&lt;/strong&gt; instead of &lt;strong&gt;ALL&lt;/strong&gt; elements in previous versions. So, just check it and do some refactoring if needed.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>JAX-RS Client ThreadPool leak</title>
+      <link>https://kostenko.org/blog/2019/10/jax-rs-jersey-thread-leak.html</link>
+      <pubDate>Fri, 4 Oct 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/10/jax-rs-jersey-thread-leak.html</guid>
+      	<description>
+	&lt;p&gt;Recently got resource(ThreadPool\Thread) leak with JAX-RS Client implementation on WF10.0.1 (RestEasy).&lt;br /&gt;
+&lt;img src=&quot;/img/2019-10-thraed-leak.png&quot; alt=&quot;jax-rs thread leak&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;From the dump above we can see, that pool number is extremely height, the same time thread number is always 1. That means that some code uses &lt;code&gt;Executors.new*&lt;/code&gt;, which returns &lt;code&gt;java.util.concurrent.ThreadPoolExecutor&lt;/code&gt; using the DefaultThreadFactory.&lt;/p&gt;
+&lt;p&gt;Actually in this situation, it is &lt;strong&gt;ALL&lt;/strong&gt; than we can see from thread and heap dumps when debugging leak like above. Because in case classes containing these executors was garbage collected, the executors get orphaned (but are still alive and uncollectable), making it difficult/impossible to detect from a heap dump where the executors came from.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Lesson #1&lt;/strong&gt; is: Doing &lt;code&gt;Executors.new*&lt;/code&gt;, would be nice to little bit think about guys who will support your code and provide non default thread names with custom ThreadFactory like :)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;ExecutorService es = Executors.newCachedThreadPool(new CustomThreadFactory());
+
+...
+
+class CustomThreadFactory implements ThreadFactory {
+
+    @Override
+    public Thread newThread(final Runnable r) {
+        return new Thread(r, &amp;quot;nice_place_for_helpful_name&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So, after many times of investigation and &amp;quot;heap walking&amp;quot;(paths to GC root) i found few &lt;code&gt;Executors$DefaultThreadFactory&lt;/code&gt; like&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-10-thraed-leak-1.png&quot; alt=&quot;jax-rs thread leak&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;what made me see the code with REST services invocations. Something like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public void doCall() {
+    Client client = ClientBuilder.newClient();
+    Future&amp;lt;Response&amp;gt; future = client.target(&amp;quot;http://...&amp;quot;)
+                                 .request()
+                                 .async().get();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;According to WF10 JAX-RS implementation each &lt;code&gt;newClient()&lt;/code&gt; will build ResteasyClient that uses &lt;code&gt;ExecutorService asyncInvocationExecutor&lt;/code&gt; to do requests and potentially it is can be the reason of the leak.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Lesson #2&lt;/strong&gt; is: Always! do &lt;code&gt;close()&lt;/code&gt; client after usage. Check that implementation closes connection and shutdowns ThreadPool in case errors (timeouts, socket resets, etc).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Lesson #3&lt;/strong&gt; is: Try to construct only a small number of Client instances in the application. Last one is still bit unclear from the pure JakartaEE application point of view, as it not works as well in  multi-threaded environment. (&lt;code&gt;Invalid use of BasicClientConnManager: connection still allocated. Make sure to release the connection before allocating another one.&lt;/code&gt;)&lt;/p&gt;
+&lt;p&gt;P.S. Many thanks for JProfiler tool trial version to make me happy with ThreadDump walking.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Migration from JEE to JakartaEE</title>
+      <link>https://kostenko.org/blog/2019/09/jee-to-jakartaee-migration.html</link>
+      <pubDate>Mon, 30 Sep 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/09/jee-to-jakartaee-migration.html</guid>
+      	<description>
+	&lt;p&gt;As you probably know Java EE was moved from Oracle to the Eclipse Foundation where will evolve under the &lt;strong&gt;Jakarta EE&lt;/strong&gt; brand.  Sept. 10, 2019 Jakarta EE Full Platform and Web Profile specifications was released by Eclipse Foundation during &lt;a href=&quot;https://jakartaone.org/&quot;&gt;JakartaOne Livestream&lt;/a&gt;. Few days later Wildfly declared that &lt;strong&gt;WildFly 17.0.1&lt;/strong&gt; has passed the Jakarta EE 8 TCK and certification request has been approved by the Jakarta EE Spec Committee. So, now WildFly is a Jakarta EE Full platform compatible implementation.&lt;/p&gt;
+&lt;p&gt;Let&apos;s do migration of typical &lt;a href=&quot;https://kostenko.org/blog/2019/08/ee-application-multi-module-template.html&quot;&gt;gradle EE project&lt;/a&gt; to the Jakarta EE and look how hard is it. Current JakartaEE version &lt;code&gt;8.0.0&lt;/code&gt; is fully compatible with JavaEE version &lt;code&gt;8.0&lt;/code&gt;, that means no need to change project sources, just update dependency from &lt;code&gt;javax:javaee-api:8.0&lt;/code&gt; to &lt;code&gt;jakarta.platform:jakarta.jakartaee-api:8.0.0&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;updated build.gradle:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apply plugin: &apos;war&apos;
+dependencies {
+    providedCompile &amp;quot;jakarta.platform:jakarta.jakartaee-api:8.0.0&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That is it! Application builds and works well under WF17.0.1&lt;/p&gt;
+&lt;p&gt;Source code of demo application available on &lt;a href=&quot;https://github.com/kostenkoserg/ee-application-multi-module-gradle-template&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Wildfly JMX connection problems (so slow and terminates)</title>
+      <link>https://kostenko.org/blog/2019/08/wildfly-jconsole-mbeans-list-problem.html</link>
+      <pubDate>Mon, 19 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/wildfly-jconsole-mbeans-list-problem.html</guid>
+      	<description>
+	&lt;p&gt;JMX (Java Management Extensions ) - is a technology that provide us possibility to monitoring applications (application servers) by &lt;strong&gt;MBeans (Managed Bean)&lt;/strong&gt; objects.&lt;br /&gt;
+List of supported MBeans can be obtained by &lt;strong&gt;JConsole&lt;/strong&gt; tool that already included to JDK. As JMX does not provide strong defined communication protocol, - implementations can be different depends on vendor.&lt;br /&gt;
+For example, to connect to Wildfly Application Server you need to use included in distribution &lt;code&gt;jconsole.sh&lt;/code&gt; script:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;WFLY_HOME&amp;gt;/bin/jconsole.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or add &lt;code&gt;&amp;lt;WFLY_HOME&amp;gt;/bin/client/jboss-client.jar&lt;/code&gt; to classpath:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;jconsole J-Djava.class.path=$JAVA_HOME\lib\tools.jar;$JAVA_HOME\lib\jconsole.jar;jboss-client.jar
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By default, Wildfly uses &lt;code&gt;timeout = 60s&lt;/code&gt; for &lt;strong&gt;remote JMX connections&lt;/strong&gt;, after that connection will terminated:&lt;br /&gt;
+&lt;img src=&quot;/img/2019-08-jmx-jconsole.png&quot; alt=&quot;jconsole terminated connection&quot; /&gt;&lt;br /&gt;
+To change default timeout value, use &lt;code&gt;org.jboss.remoting-jmx.timeout&lt;/code&gt; property:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;./jconsole.sh -J-Dorg.jboss.remoting-jmx.timeout=300
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But increasing timeouts, is not always good solution. So, lets search for the reason of slowness. To construct list of MBeans, jconsole recursively requests ALL MBeans, that can be extremely slow in case many deployments and many loggers. (Reported issue: &lt;a href=&quot;https://issues.jboss.org/browse/WFCORE-3186&quot;&gt;WFCORE-3186&lt;/a&gt;). Partial solution here is reducing count of log files by changing rotating type from &lt;code&gt;periodic-size-rotating-file-handler&lt;/code&gt;  to &lt;code&gt;size-rotating-file-handler&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Other reason of extremely slowness can be &lt;code&gt;Batch subsystem (JBeret)&lt;/code&gt;. Last one stores a lot of working information in their tables (in memory or on remote DB, depends on configuration). If this tables big enough - it can negative affect performance of server. So, if you, no need for this data then just cleanup this stuff periodically. (for example, every redeploy in case you do it often enough):&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;TRUNCATE TABLE PARTITION_EXECUTION CASCADE;
+TRUNCATE TABLE STEP_EXECUTION CASCADE;
+TRUNCATE TABLE JOB_EXECUTION CASCADE;
+TRUNCATE TABLE JOB_INSTANCE CASCADE;  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;From other point of view, obtaining ALL MBeans is not good decision as well. So, just use tooling that allows to find MBeans by path.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Jakarta EE application multi module gradle template</title>
+      <link>https://kostenko.org/blog/2019/08/ee-application-multi-module-template.html</link>
+      <pubDate>Thu, 8 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/ee-application-multi-module-template.html</guid>
+      	<description>
+	&lt;p&gt;In this post i will share simple and useful &lt;strong&gt;gradle&lt;/strong&gt; template to organize multi module Jakarta EE application. We will implement typical one which consists from REST controller (&lt;strong&gt;module1&lt;/strong&gt;) and some main logic (&lt;strong&gt;module2&lt;/strong&gt;). Big picture of our application architecture is:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-08-ee-multimodule-template-arch.png&quot; alt=&quot;EE multi module application&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;So, lets do initialization of project with next  gradle template:&lt;br /&gt;
+&lt;code&gt;settings.gradle:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;rootProject.name = &apos;ee-application-multi-module-gradle-template&apos;
+include &apos;module1&apos;
+include &apos;module2:module2-api&apos;, &apos;module2:module2-core&apos;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;root build.gradle:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;defaultTasks &apos;clean&apos;, &apos;build&apos;
+subprojects {
+    ext.libraryVersions = [
+        javaee                  : &apos;8.0&apos;,
+    ]
+    defaultTasks &apos;clean&apos;, &apos;build&apos;
+    repositories {
+        jcenter()
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Above, we described initial application structure, where &lt;strong&gt;module1&lt;/strong&gt; is flat sub project for our controller and &lt;strong&gt;module2&lt;/strong&gt; is our main logic which consists from &lt;code&gt;API&lt;/code&gt; and &lt;code&gt;Core&lt;/code&gt; sub projects. As controller will use main logic API and we decided to separate application to modules (that means no big enterprise archive) - our sub projects should be simple enough:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;module1 build.gradle:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apply plugin: &apos;war&apos;
+dependencies {
+    compile project(&apos;:module2:module2-api&apos;)
+    providedCompile &amp;quot;javax:javaee-api:${libraryVersions.javaee}&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;module2:module2-api:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apply plugin: &apos;java&apos;
+dependencies {
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;module2:module2-core:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apply plugin: &apos;war&apos;
+dependencies {
+    compile project(&apos;:module2:module2-api&apos;)
+    providedCompile &amp;quot;javax:javaee-api:${libraryVersions.javaee}&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Actually, that&apos;s it!&lt;br /&gt;
+Now we can implement our controller like:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Path(&amp;quot;/&amp;quot;)
+@Stateless
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class TestEndpoint {
+
+    @EJB(lookup = TestService.TEST_SERVICE_JNDI)
+    TestService testService;
+
+    @GET
+    @Path(&amp;quot;/test&amp;quot;)
+    public Response test() {
+        SomethingDto something = testService.doSomething();
+        return Response.ok().entity(something.getMessage()).build();
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In turn, main logic &lt;code&gt;API&lt;/code&gt; contents from &lt;code&gt;Interface&lt;/code&gt; and &lt;code&gt;DTO&lt;/code&gt;:&lt;br /&gt;
+&lt;code&gt;TestService.java:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public interface TestService {
+
+  String TEST_SERVICE_NAME = &amp;quot;test-service&amp;quot;;
+  String TEST_SERVICE_JNDI =&amp;quot;java:global/module2-core/&amp;quot; + TEST_SERVICE_NAME;
+
+  SomethingDto doSomething();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;SomethingDto.java:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class SomethingDto implements Serializable{
+  ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the end, main logic &lt;code&gt;Core&lt;/code&gt; contents from the logic that implements API:&lt;br /&gt;
+&lt;code&gt;TestServiceImpl.java&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Remote(TestService.class)
+@Stateless(name = TestService.TEST_SERVICE_NAME)
+public class TestServiceImpl implements TestService {
+
+    @PersistenceContext
+    EntityManager entityManager;
+
+    @Override
+    public SomethingDto doSomething() {
+        TestEntity entity = entityManager.find(TestEntity.class, Long.MAX_VALUE);
+        return new SomethingDto(&amp;quot;Hello Jakarta EE world!&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Described Jakarta EE application architecture allows us enjoy all power of EE with absolutely transparent inter module interactions and, the same time, stay close to micro service design - as we have no limits with using one container for all modules.&lt;/p&gt;
+&lt;p&gt;Source code of this demo available on &lt;a href=&quot;https://github.com/kostenkoserg/ee-application-multi-module-gradle-template&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>How to catch &apos;kill&apos; signals in java</title>
+      <link>https://kostenko.org/blog/2019/08/java-catch-os-signals.html</link>
+      <pubDate>Wed, 7 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/java-catch-os-signals.html</guid>
+      	<description>
+	&lt;p&gt;You can send different signals to your application using &lt;strong&gt;kill -l&lt;/strong&gt; command. By default &lt;strong&gt;kill&lt;/strong&gt; will sent &lt;code&gt;TERM&lt;/code&gt; signal. Java by default catches some types of signals, for example&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;kill -3 &amp;lt;PID&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;will dump Java stack traces to the standard error stream.&lt;/p&gt;
+&lt;p&gt;Also, you can catch &lt;code&gt;signal&lt;/code&gt; inside your application, like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class App {
+    public static void main(String... s) throws Exception {
+
+        Signal.handle(new Signal(&amp;quot;HUP&amp;quot;), signal -&amp;gt; {
+            System.out.println(signal.getName() + &amp;quot; (&amp;quot; + signal.getNumber() + &amp;quot;)&amp;quot;);
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(1000l);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;List of available signals you can get by executing &lt;code&gt;kill -l&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;kostenko@kostenko:~$ kill -l
+ 1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+ 6) SIGABRT	 7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+11) SIGSEGV	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+31) SIGSYS	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+63) SIGRTMAX-1	64) SIGRTMAX
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Notice! Not all signals can be catched in application, some of them reserved by OS. For example, if you will try to handle &lt;strong&gt;kill -SIGKILL (kill -9)&lt;/strong&gt; , then you get:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.IllegalArgumentException: Signal already used by VM or OS: SIGKILL
+	at java.base/jdk.internal.misc.Signal.handle(Signal.java:173)
+	at jdk.unsupported/sun.misc.Signal.handle(Signal.java:157)
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Embedded Jetty server truncates responses</title>
+      <link>https://kostenko.org/blog/2019/08/embedded-jetty-server-cut-responses.html</link>
+      <pubDate>Tue, 6 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/embedded-jetty-server-cut-responses.html</guid>
+      	<description>
+	&lt;p&gt;Jetty server has lot of configuration options. One of them is &lt;code&gt;OutputBufferSize&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;HttpConfiguration httpConfig = new HttpConfiguration();
+httpConfig.setOutputBufferSize(1024);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If this property set to value less than your respopnse - jetty just will truncate last one.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Wildfly. Configure load balancing metrics</title>
+      <link>https://kostenko.org/blog/2019/08/wildfly-load-balancing-metrics.html</link>
+      <pubDate>Tue, 6 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/wildfly-load-balancing-metrics.html</guid>
+      	<description>
+	&lt;p&gt;Previously i wrote about &lt;a href=&quot;https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html&quot;&gt;Wildfly domain mode cluster and load balancing from the box&lt;/a&gt;. But what if we would like to do balancing depends on specific server behavior ?&lt;/p&gt;
+&lt;p&gt;Wildfly subsystem &lt;code&gt;mod_cluster&lt;/code&gt; provide us several predefined metric types to determine best request balancing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;cpu&lt;/strong&gt;: based on CPU load&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;mem&lt;/strong&gt;: based on system memory usage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;heap&lt;/strong&gt;: based on heap usage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sessions&lt;/strong&gt;: based on number of web sessions&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;requests&lt;/strong&gt;: based on amount of requests/sec&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;send-traffic&lt;/strong&gt;: based on outgoing requests traffic&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;receive-traffic&lt;/strong&gt;: based on incoming requests POST traffic&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;busyness&lt;/strong&gt;: computes based on amount of Thread from Thread Pool usage that are busy servicing requests&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;connection-pool&lt;/strong&gt;: based on JCA connections&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As well you also can configure &lt;strong&gt;weight&lt;/strong&gt; (impact of a metric respect to other metrics) and &lt;strong&gt;capacity&lt;/strong&gt; properties;&lt;br /&gt;
+Below is example, how to change default based on CPU balancing to balancing based on busyness + CPU:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/subsystem=modcluster/mod-cluster-config=configuration/dynamic-load-provider=configuration/load-metric=cpu:remove()
+/subsystem=modcluster/mod-cluster-config=configuration:add-metric(type=busyness,weight=2)
+/subsystem=modcluster/mod-cluster-config=configuration:add-metric(type=cpu,weight=1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If predefined types is not enough, - you can provide &lt;code&gt;custom-load-metric&lt;/code&gt; by implementing &lt;code&gt;org.jboss.modcluster.load.metric.impl.AbstractLoadMetric&lt;/code&gt;. To possibility of using your custom metric,- you need to copy packaged JAR to &lt;code&gt;modcluster&lt;/code&gt; module and update &lt;code&gt;module.xml&lt;/code&gt;. Now you can use your custom metric with your configuration like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt; &amp;lt;custom-load-metric class=&amp;quot;org.kostenko.examples.wldfly.modcluster.MyBalancingMetric&amp;quot;&amp;gt;  
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>WFLYEJB0054: Failed to marshal EJB parameters</title>
+      <link>https://kostenko.org/blog/2019/08/WFLYEJB0054.html</link>
+      <pubDate>Mon, 5 Aug 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/08/WFLYEJB0054.html</guid>
+      	<description>
+	&lt;p&gt;Usually error &lt;code&gt;WFLYEJB0054: Failed to marshal EJB parameters&lt;/code&gt; can be throw by next reason:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Your data transfer object does not implement Serializable&lt;/li&gt;
+&lt;li&gt;Your transfered object does not exist in destination module classpath (for example, if you are using DTO without strong typing)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Also, you can catch this error with absolutely unexpected scenario and unclear stacktrace when your EJB throws some unchecked exception with stacktrace that has objects from points above.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>SQL trick. Insert if not exists</title>
+      <link>https://kostenko.org/blog/2019/07/sql-trick-insert-if-noe-exists.html</link>
+      <pubDate>Wed, 24 Jul 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/07/sql-trick-insert-if-noe-exists.html</guid>
+      	<description>
+	&lt;p&gt;Next SQL trick allows you perform conditional &lt;code&gt;INSERT&lt;/code&gt; with your query.&lt;/p&gt;
+&lt;p&gt;For example, lets do insert if record not exists yet:&lt;/p&gt;
+&lt;p&gt;SQL:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sql&quot;&gt;INSERT INTO my_table (id, name)  
+    SELECT 1, &apos;name&apos; FROM dual  WHERE NOT EXISTS (SELECT 1 FROM my_table WHERE ID = 1);
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>JMS Duplicate Message Detection with Wildfly</title>
+      <link>https://kostenko.org/blog/2019/07/wildfly-jms-duplicate-detection.html</link>
+      <pubDate>Fri, 19 Jul 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/07/wildfly-jms-duplicate-detection.html</guid>
+      	<description>
+	&lt;p&gt;To support JMS specification Wildfly uses Apache ActiveMQ Artemis over active-mq subsystem. Last one provides mechanism to filtering out duplicate messages without application code changes.&lt;/p&gt;
+&lt;p&gt;To enable duplicate message detection you just need to set a special property on the message to a unique value&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;message.setStringProperty(&amp;quot;_AMQ_DUPL_ID&amp;quot;, uniqueId);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So, lets see how it works on practice and create simple Message Driven Bean to consume messages:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@JMSDestinationDefinition(
+        name = DuplicateJMSTestBean.DUPLICATE_QUEUE,
+        interfaceName = &amp;quot;javax.jms.Queue&amp;quot;
+)
+@MessageDriven(activationConfig = {
+    @ActivationConfigProperty(propertyName = &amp;quot;destinationLookup&amp;quot;, propertyValue = DuplicateJMSTestBean.DUPLICATE_QUEUE),
+    @ActivationConfigProperty(propertyName = &amp;quot;destinationType&amp;quot;, propertyValue = &amp;quot;javax.jms.Queue&amp;quot;)
+})
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class DuplicateJMSTestBean implements MessageListener {
+
+    public final static String DUPLICATE_QUEUE = &amp;quot;java:global/jms/duplicateTestQueue&amp;quot;;
+
+    @Override
+    public void onMessage(Message msg) {
+        System.out.println(&amp;quot;Got new message.&amp;quot;);
+        MessageStorage.messages.add(msg);
+        try {
+            Thread.sleep(5_000l);
+        } catch(Exception ignore) {}
+        System.out.println(&amp;quot;Message  successfully processed&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And simple JAX-RS endpoint to produce messages&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Path(&amp;quot;/&amp;quot;)
+@Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class DuplicateTestEndpoint {
+
+    @Inject
+    private JMSContext context;
+    @Resource(lookup = DuplicateJMSTestBean.DUPLICATE_QUEUE)
+    private Queue queue;
+
+    @GET
+    @Path(&amp;quot;/sendmessage&amp;quot;)
+    public Response sendMessage(@QueryParam(&amp;quot;duplicate-id&amp;quot;) String duplicateId) {
+        try {
+            ObjectMessage message = context.createObjectMessage();
+            if (duplicateId == null) {
+                context.createProducer().send(queue, message);
+            } else {
+                message.setStringProperty(&amp;quot;_AMQ_DUPL_ID&amp;quot;, duplicateId);
+                context.createProducer().send(queue, message);
+            }
+            return Response.ok().entity(&amp;quot;Message was sent.  Recieved &amp;quot; + MessageStorage.messages.size() + &amp;quot; messagges: &amp;quot; + MessageStorage.messages).build();
+        } catch (Throwable e) {
+            return Response.ok().entity(&amp;quot;Error: &amp;quot; + e).build();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now in case we send message with the same &lt;code&gt;_AMQ_DUPL_ID&lt;/code&gt; without transaction by &lt;code&gt;http://127.0.0.1:8080/jms-examples/sendmessage?duplicate-id=myuniqueid&lt;/code&gt; we will get in logs:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;WARN [org.apache.activemq.artemis.core.server] (Thread-448 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$5@e47887a)) AMQ222059: Duplicate message detected - message will not be routed. Message information:
+CoreMessage[messageID=1505,durable=true,userID=3d27afde-a9fa-11e9-af5d-0242e352ec80,priority=4, timestamp=Fri Jul 19 10:53:04 EEST 2019,expiration=0, durable=true, address=jms.queue.jms-examples_jms-examples_jms-examples_java:global/jms/duplicateTestQueue,size=416,properties=TypedProperties[__AMQ_CID=38587489-a9fa-11e9-af5d-0242e352ec80,_AMQ_DUPL_ID=myuniqueid,_AMQ_ROUTING_TYPE=1]]@145077408
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and message will NOT consume by consumer. In case you send message in transaction - you will get &lt;code&gt;Exception&lt;/code&gt; on commit.&lt;/p&gt;
+&lt;p&gt;Keep in mind, that to store IDs activemq uses circular fixed size cache&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/subsystem=messaging-activemq/server=default:read-attribute(name=id-cache-size)
+{
+    &amp;quot;outcome&amp;quot; =&amp;gt; &amp;quot;success&amp;quot;,
+    &amp;quot;result&amp;quot; =&amp;gt; 20000
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;so, this value should be big enough to avoid rewriting. Also, you can configure persist cache or not (by default: &lt;code&gt;true&lt;/code&gt;)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/subsystem=messaging-activemq/server=default:write-attribute(name=persist-id-cache,value=false)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Source code available on &lt;a href=&quot;https://github.com/kostenkoserg/ee-jms-examples&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Jenkins. Nice to have plugins</title>
+      <link>https://kostenko.org/blog/2019/07/jenkins-nice-to-have-plugins.html</link>
+      <pubDate>Fri, 5 Jul 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/07/jenkins-nice-to-have-plugins.html</guid>
+      	<description>
+	&lt;p&gt;Jenkins is leading open source automation tool that provides lot of plugins to make your CI better. Below is few of them that, on my opinion, can be helpful for any project.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;1. &lt;a href=&quot;https://plugins.jenkins.io/build-monitor-plugin&quot;&gt;Build Monitor Plugin&lt;/a&gt;&lt;/strong&gt; - provides a highly visible view of the status of selected Jenkins jobs;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-07-jenkins-build-monitor-plugin.png&quot; alt=&quot;Build Monitor Plugin&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;2. &lt;a href=&quot;https://plugins.jenkins.io/git-parameter&quot;&gt;Git Parameter Plugin&lt;/a&gt;&lt;/strong&gt; - adds ability to choose branches, tags or revisions from git repository configured in project;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-07-jenkins-git-parameter-plugin.png&quot; alt=&quot;Git Parameter Plugin&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;3. &lt;a href=&quot;https://plugins.jenkins.io/htmlpublisher&quot;&gt;HTML Publisher Plugin&lt;/a&gt;&lt;/strong&gt; - publish the html reports that your build generates to the job and build pages;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-07-jenkins-html-report-plugin.png&quot; alt=&quot;Git Parameter Plugin&quot; /&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Wildfly active-mq subsystem deadlock</title>
+      <link>https://kostenko.org/blog/2019/06/wildfly-activemq-deadlock.html</link>
+      <pubDate>Sat, 29 Jun 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/06/wildfly-activemq-deadlock.html</guid>
+      	<description>
+	&lt;p&gt;Recently got unusual height CPU utilizaton on random wildly cluster instance. Thread dump shows the reason of a problem:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Found one Java-level deadlock:
+=============================
+
+&amp;quot;Thread-1 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$2@46fcd20a-1114701218)&amp;quot;:
+  waiting to lock Monitor@0x00007f45f02e20f8 (Object@0x0000000603407950, a org/apache/activemq/artemis/core/server/cluster/impl/ClusterConnectionImpl$MessageFlowRecordImpl),
+  which is held by &amp;quot;Thread-29 (ActiveMQ-client-global-threads-2129186403)&amp;quot;
+&amp;quot;Thread-29 (ActiveMQ-client-global-threads-2129186403)&amp;quot;:
+  waiting to lock Monitor@0x00007f46203b5518 (Object@0x00000004cc79a7b8, a org/apache/activemq/artemis/core/server/impl/QueueImpl),
+  which is held by &amp;quot;Thread-1 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$2@46fcd20a-1114701218)&amp;quot;
+
+Found a total of 1 deadlock.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Below is part of official documentation:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;If thread-pool-max-size is set to a positive integer greater than zero, the thread pool is bounded. If requests come in and there are no free threads available in the pool, requests will block until a thread becomes available. It is recommended that a bounded thread pool be used with caution since it can lead to &lt;strong&gt;deadlock situations&lt;/strong&gt; if the upper bound is configured too low.&amp;quot;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So, solution is:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/subsystem=messaging-activemq/server=default:write-attribute(name=thread-pool-max-size,value=-1)
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>How to use custom ClassLoader to load jars in runtime</title>
+      <link>https://kostenko.org/blog/2019/06/runtime-class-loading.html</link>
+      <pubDate>Fri, 28 Jun 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/06/runtime-class-loading.html</guid>
+      	<description>
+	&lt;p&gt;To load calsses in runtime java uses ClassLoader mechanism which is based on next core principles:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;delegation&lt;/strong&gt; - by default uses &lt;code&gt;parent-first delegation&lt;/code&gt;, - child ClassLoader will be used if parent is not able to find or load class. This behavior can be changed to &lt;code&gt;child-first&lt;/code&gt; by overwriting &lt;code&gt;ClassLoader.loadClass(...)&lt;/code&gt;;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;visibility&lt;/strong&gt; - child ClassLoader is able to see all the classes loaded by parent but vice-versa is not true;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;uniqueness&lt;/strong&gt; - allows to load a class exactly once, which is basically achieved by delegation and ensures that child ClassLoader doesn&apos;t reload the class already loaded by parent;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The main scenarios to use custom ClassLoader is:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Class Instrumentation&lt;/strong&gt; - modifying classes at runtime. For example, to unit testing, debugging or monitoring;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Isolation of executions&lt;/strong&gt; - isolate several execution environments within a single process by making visible only a subset of classes for a particular thread, like it does in EE environments;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So, let&apos;s see how using of custom ClassLoader looks from source code perspective:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;List&amp;lt;File&amp;gt; jars = Arrays.asList(new File(&amp;quot;/tmp/jars&amp;quot;).listFiles());
+URL[] urls = new URL[files.size()];
+for (int i = 0; i &amp;lt; jars.size(); i++) {
+    try {
+        urls[i] = jars.get(i).toURI().toURL();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+URLClassLoader childClassLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then load class with custom ClassLoader:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Class.forName(&amp;quot;org.kostenko.examples.core.classloader.ClassLoaderTest&amp;quot;, true , childClassLoader);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Note! If your loaded libraries uses some resources like properties or something else, you need to provide context class loader:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Thread.currentThread().setContextClassLoader(childClassLoader);  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Also, you can use custom ClassLoaders to load services with Java Service Provider Interface(SPI)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;ServiceLoader&amp;lt;MyProvider&amp;gt; serviceLoader = ServiceLoader.load(MyProvider.class, childClassLoader);
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Design DSL API in Java</title>
+      <link>https://kostenko.org/blog/2019/05/design-dsl-api-java.html</link>
+      <pubDate>Mon, 27 May 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/05/design-dsl-api-java.html</guid>
+      	<description>
+	&lt;p&gt;Well designed API is very important in case you expect your API will use someone else instead of just you. To build readable and writable DSL(domain specific language) in Java usually uses Builder pattern with few simple rules:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Think twice about names for methods&lt;/li&gt;
+&lt;li&gt;Restrict available values for each step&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So, lets see how it looks from source code perspective...&lt;/p&gt;
+&lt;p&gt;Design API entry point&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class MyAPI {
+    public static UserBuilder.Registration asUser() {
+        return new UserBuilder.User();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Design builder using interfaces to restrict available values depends on current step&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class UserBuilder {
+    public static class User implements Registration, Login, Password, Apply {
+        private String login;
+        private String password;
+
+        @Override
+        public Login doRegistration() {
+            return this;
+        }
+        @Override
+        public Password withLogin(String login) {
+            this.login = login;
+            return this;
+        }
+        @Override
+        public Apply withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+        @Override
+        public void apply() {
+            // ...
+        }
+    }
+
+    public interface Registration {
+        Login doRegistration();
+    }
+    public interface Login {
+        Password withLogin(String login);
+    }
+    public interface Password {
+        Apply withPassword(String password);
+    }
+    public interface Apply {
+        void apply();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then usage, with no chance to mistake, looks like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;asUser().doRegistration()
+        .withLogin(&amp;quot;login&amp;quot;).withPassword(&amp;quot;password&amp;quot;)
+        .apply();
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>My video about Wildfly domain mode clustering</title>
+      <link>https://kostenko.org/blog/2019/05/wildfly-domain-mode-cluster-video.html</link>
+      <pubDate>Thu, 2 May 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/05/wildfly-domain-mode-cluster-video.html</guid>
+      	<description>
+	
+Have published new YouTube video about Wildfly AS domain mode clustering
+
+&lt;br/&gt;&lt;br/&gt;
+&lt;div class=&quot;row&quot;&gt;
+    &lt;iframe align =&quot;center&quot; class=&quot;col-md-offset-3 col-lg-6 col-md-6 col-sm-12 col-xs-12&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/dIT9e945OHs&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Improve performance of random number generation</title>
+      <link>https://kostenko.org/blog/2019/04/java-spedup-random-generation.html</link>
+      <pubDate>Thu, 18 Apr 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/04/java-spedup-random-generation.html</guid>
+      	<description>
+	&lt;p&gt;Directly or indirectly every developer uses random number generation during application development by different reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cryptography&lt;/li&gt;
+&lt;li&gt;simulations&lt;/li&gt;
+&lt;li&gt;game engines&lt;/li&gt;
+&lt;li&gt;UUID generation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and many more...&lt;/p&gt;
+&lt;p&gt;In Java we have &lt;strong&gt;insecure&lt;/strong&gt;: &lt;code&gt;java.util.Random&lt;/code&gt; and &lt;strong&gt;secure&lt;/strong&gt;: &lt;code&gt;java.security.SecureRandom&lt;/code&gt; random generators. Main differences between is&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Size&lt;/strong&gt; - 48(Random) vs 128(SecureRandom) bits, so the chances of repeating for last one are smaller.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Seed Generation&lt;/strong&gt; - Random uses the system clock and, so can be reproduced. SecureRandom takes random data from your OS (hardware)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Security&lt;/strong&gt; - Consequently, the java.util.Random class must not be used either for security-critical applications or for protecting sensitive data.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As result of above, for described reasons using of SecureRandom much preferable. You may never get performance issues with it until you need for number of random numbers which can be generated per time unit. Especially on cloud environment because of poor entropy.&lt;/p&gt;
+&lt;p&gt;Simple ussage and speed comparison example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class RandomGenerationTest {
+
+    private static int count = 100_000_000;
+
+    public static void main(String... s) throws Exception {
+        System.out.println(&amp;quot;Start...&amp;quot;);
+        doGeneration(new Random());
+        doGeneration(new SecureRandom());
+    }
+
+    private static void doGeneration(Random random) {
+        long time = System.currentTimeMillis();
+        for (int i = 0; i &amp;lt; count; i++) {
+            random.nextInt();
+        }
+        time = System.currentTimeMillis() - time;
+        System.out.println(String.format(&amp;quot;Generation of %s random numbers with %s time %s ms.&amp;quot;, count, random.getClass().getName() ,time));
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;Generation of 100000000 random numbers with java.util.Random time 930 ms.
+Generation of 100000000 random numbers with java.security.SecureRandom time 22036 ms.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By default SecureRandom will use random data from Linux kernel entropy pool &lt;code&gt;/dev/random&lt;/code&gt;. So in case pool went empty -  next generation can be delayed for &lt;strong&gt;several minutes&lt;/strong&gt;. You also can switch to the pseudo random number generator &lt;code&gt;/dev/urandom&lt;/code&gt; which is can be must faster (non blocking) but little bit less secure.&lt;/p&gt;
+&lt;p&gt;To make Java use &lt;code&gt;/dev/urandom&lt;/code&gt; you need to change &lt;code&gt;securerandom.source&lt;/code&gt; property in the file &lt;code&gt;jre/lib/security/java.security&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;securerandom.source=file:/dev/urandom
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The entropy gathering device can also be specified with the System property &lt;code&gt;java.security.egd&lt;/code&gt;. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;java -Djava.security.egd=file:/dev/urandom MainClass
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To check how much random data is currently available in the entropy pool, use next command:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;cat /proc/sys/kernel/random/entropy_avail
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Every number lower than 1.000 can be considered too low for normal operation; if you request more data than available the requesting process will block. To increase entropy of Linux environment you can use &lt;strong&gt;HA&lt;/strong&gt;rdware &lt;strong&gt;V&lt;/strong&gt;olatile &lt;strong&gt;E&lt;/strong&gt;ntropy &lt;strong&gt;G&lt;/strong&gt;athering and &lt;strong&gt;E&lt;/strong&gt;xpansion with &lt;code&gt;haveged&lt;/code&gt; open source implementation&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apt-get install haveged
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It will use additional hardware(CPU) statistic to increase entropy and as result speedup your application.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Wildfly domain mode cluster and load balancing from the box</title>
+      <link>https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html</link>
+      <pubDate>Mon, 15 Apr 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/04/wildfly-cluster-domain-mode.html</guid>
+      	<description>
+	&lt;p&gt;Wildfly Application Server provide us two possible modes to setup cluster environment for the Java EE applications.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Standalone mode&lt;/strong&gt; - every standalone instance has its own management interface and configuration. You can manage one instance at a time. Configuration placed in &lt;code&gt;standalone.xml&lt;/code&gt; file.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Domain mode&lt;/strong&gt; - all Wildfly instances manage by special orchestration process called &lt;code&gt;domain controller&lt;/code&gt;. Using domain controller you can manage group of servers. Also you can mange groups as well. Each servers group can has its own configuration, deployments etc. Configuration placed in &lt;code&gt;domain.xml&lt;/code&gt; and &lt;code&gt;host.xml&lt;/code&gt; files.&lt;br /&gt;
+Example of a Wildfly server groups:&lt;br /&gt;
+&lt;img src=&quot;/img/2019-04-wildfly-cluster-domain-mode.png&quot; alt=&quot;wildfly-cluster-domain-mode&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;From the version 10 Wildfly adds support for using the &lt;code&gt;Undertow&lt;/code&gt; subsystem as a load balancer. So, now all we need to build Java EE clustered infrastructure is Wildfly only. Let&apos;s do it.&lt;/p&gt;
+&lt;p&gt;Download latest version of application server from the &lt;a href=&quot;https://wildfly.org/downloads/&quot;&gt;https://wildfly.org/downloads/&lt;/a&gt; and unzip distributive after. To run Wildfly in domain mode, please execute:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./domain.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Connect to the Wildfly CLI concole&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./jboss-cli.sh -c
+[domain@localhost:9990 /]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By default Wildfly has preconfigured server groups &lt;code&gt;main-server-group&lt;/code&gt; and &lt;code&gt;other-server-group&lt;/code&gt;, so we need cleanup existing servers:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;:stop-servers(blocking=true)
+/host=master/server-config=server-one:remove
+/host=master/server-config=server-two:remove
+/host=master/server-config=server-three:remove
+/server-group=main-server-group:remove
+/server-group=other-server-group:remove
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create new server group and servers, using the &lt;code&gt;full-ha&lt;/code&gt; profile so &lt;code&gt;mod_cluster&lt;/code&gt; support is included:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/server-group=backend-servers:add(profile=full-ha, socket-binding-group=full-ha-sockets)
+/host=master/server-config=backend1:add(group=backend-servers, socket-binding-port-offset=100)
+/host=master/server-config=backend2:add(group=backend-servers, socket-binding-port-offset=200)
+
+#start the backend servers
+/server-group=backend-servers:start-servers(blocking=true)
+
+#add system properties (so we can tell them apart)
+/host=master/server-config=backend1/system-property=server.name:add(boot-time=false, value=backend1)
+/host=master/server-config=backend2/system-property=server.name:add(boot-time=false, value=backend2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then  set up the server group for load balancer&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;/server-group=load-balancer:add(profile=load-balancer, socket-binding-group=load-balancer-sockets)
+/host=master/server-config=load-balancer:add(group=load-balancer)
+/socket-binding-group=load-balancer-sockets/socket-binding=modcluster:write-attribute(name=interface, value=public)
+/server-group=load-balancer:start-servers
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let&apos;s develop simple JAX-RS endpoint to show how it works:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Path(&amp;quot;/clusterdemo&amp;quot;)
+@Stateless
+public class ClusterDemoEndpoint {
+
+    @GET
+    @Path(&amp;quot;/serverinfo&amp;quot;)
+    public Response getServerInfo() {
+
+        return Response.ok().entity(&amp;quot;Server: &amp;quot; + System.getProperty(&amp;quot;server.name&amp;quot;)).build();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Build project and deploy it to the &lt;code&gt;backend-servers&lt;/code&gt; group:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;[domain@localhost:9990 /] deploy ee-jax-rs-examples.war --server-groups=backend-servers
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And check the result by &lt;code&gt;http://localhost:8080/ee-jax-rs-examples/clusterdemo/serverinfo&lt;/code&gt; :&lt;br /&gt;
+&lt;img src=&quot;/img/2019-04-wildfly-cluster-domain-mode-1-2.gif&quot; alt=&quot;wildfly-cluster-domain-mode-1-2&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Now we can easily add  servers to the group at runtime and requests will balancing automatically:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;[domain@localhost:9990 /] /host=master/server-config=backend3:add(group=backend-servers, socket-binding-port-offset=300)
+[domain@localhost:9990 /] /host=master/server-config=backend3/system-property=server.name:add(boot-time=false, value=backend3)
+[domain@localhost:9990 /] /server-group=backend-servers/:start-servers(blocking=true)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;/img/2019-04-wildfly-cluster-domain-mode-1-2-3.gif&quot; alt=&quot;wildfly-cluster-domain-mode-1-2-3&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;That is it!&lt;br /&gt;
+Source code available on GitHub:  &lt;a href=&quot;https://github.com/kostenkoserg/ee-jax-rs-examples/blob/master/src/main/java/org/kostenko/example/jaxrs/ClusterDemoEndpoint.java&quot;&gt;Demo application&lt;/a&gt;,  &lt;a href=&quot;https://github.com/kostenkoserg/wildfly-configuration-examples/blob/master/wildfly-domain-mode-cluster.cli&quot;&gt;Wildlfly CLI &lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>JBake blog pagination</title>
+      <link>https://kostenko.org/blog/2019/04/jbake-blog-pagination.html</link>
+      <pubDate>Wed, 10 Apr 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/04/jbake-blog-pagination.html</guid>
+      	<description>
+	&lt;p&gt;To enable pagintation support on your JBake based blog you need to provide next properties in your &lt;code&gt;jbake.properties&lt;/code&gt; file:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;index.paginate=true
+index.posts_per_page=5
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After that JBake will generate subdirectories &lt;code&gt;2,3,4...&lt;/code&gt; for your &lt;code&gt;index.html&lt;/code&gt;. Next, you need to update &lt;code&gt;index&lt;/code&gt; template to generate necessary count of posts per each index page and provide &amp;quot;previous&amp;quot;,&amp;quot;next&amp;quot; navigation buttons.&lt;/p&gt;
+&lt;p&gt;Below, I will show you freemarker template with pagination support, that I am using for this blog&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;&amp;lt;#include &amp;quot;header.ftl&amp;quot;&amp;gt;
+	&amp;lt;#include &amp;quot;menu.ftl&amp;quot;&amp;gt;
+	&amp;lt;#list posts as post&amp;gt;
+  		&amp;lt;#if (post.status == &amp;quot;published&amp;quot;  &amp;amp;&amp;amp; post?index &amp;gt;= (currentPageNumber-1) * config.index_posts_per_page?eval &amp;amp;&amp;amp; post?index &amp;lt; currentPageNumber * config.index_posts_per_page?eval)&amp;gt;
+				&amp;lt;a href=&amp;quot;${post.uri}&amp;quot;&amp;gt;&amp;lt;h1&amp;gt;&amp;lt;#escape x as x?xml&amp;gt;${post.title}&amp;lt;/#escape&amp;gt;&amp;lt;/h1&amp;gt;&amp;lt;/a&amp;gt;
+				&amp;lt;p&amp;gt;${post.date?string(&amp;quot;dd MMMM yyyy&amp;quot;)}&amp;lt;/p&amp;gt;
+  			&amp;lt;p&amp;gt;${post.body}&amp;lt;/p&amp;gt;
+				&amp;lt;hr/&amp;gt;
+  		&amp;lt;/#if&amp;gt;
+  	&amp;lt;/#list&amp;gt;
+		&amp;lt;ul class=&amp;quot;pager&amp;quot;&amp;gt;
+			&amp;lt;#if (currentPageNumber &amp;gt; 1)&amp;gt;&amp;lt;li class=&amp;quot;previous&amp;quot;&amp;gt;&amp;lt;a href=&amp;quot;${config.site_host}/${(currentPageNumber==2)?then(&apos;&apos;, currentPageNumber-1)}&amp;quot;&amp;gt;Previous&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&amp;lt;/#if&amp;gt;
+			&amp;lt;li&amp;gt;Page: ${currentPageNumber}/${numberOfPages} (&amp;lt;a href=&amp;quot;${content.rootpath}${config.archive_file}&amp;quot;&amp;gt;archive&amp;lt;/a&amp;gt;)&amp;lt;/li&amp;gt;
+			&amp;lt;#if (currentPageNumber &amp;lt; numberOfPages)&amp;gt;&amp;lt;li class=&amp;quot;next&amp;quot;&amp;gt;&amp;lt;a href=&amp;quot;${config.site_host}/${currentPageNumber + 1}&amp;quot;&amp;gt;Next&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&amp;lt;/#if&amp;gt;
+		&amp;lt;/ul&amp;gt;
+&amp;lt;#include &amp;quot;footer.ftl&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Blog sources available on &lt;a href=&quot;https://github.com/kostenkoserg/kostenko.blog.src&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Java EE CDI events. Dynamic qualifier.</title>
+      <link>https://kostenko.org/blog/2019/04/java-ee-cdi-events.html</link>
+      <pubDate>Mon, 8 Apr 2019 00:00:00 +0300</pubDate>
+      <guid isPermaLink="false">blog/2019/04/java-ee-cdi-events.html</guid>
+      	<description>
+	&lt;p&gt;Java EE provides us really nice mechanism for event processing. Which is part of the CDI for Java specification. Dynamic qualifier for CDI Events can be very useful, for example, in domain driven design, web socket messages routing or any other stuff depends on needs.&lt;/p&gt;
+&lt;p&gt;Firing simple event looks like:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class MyEventSource {
+
+    @Inject
+    private Event&amp;lt;String&amp;gt; myEvent;
+
+    public void fireEvent(){
+        myEvent.fire(&amp;quot;Hello World!&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then event observer like:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class MyEventObserver {
+    public void observeEvent(@Observes String message){
+        System.out.println(message);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With CDI Qualifier (fancy annotation) you can specify which observer should serve the event&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Qualifier
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, PARAMETER, TYPE})
+public @interface Important {
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For  example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class MyEventSource {
+
+    @Inject
+    @Important
+    private Event&amp;lt;String&amp;gt; myEvent;
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class MyEventObserver {
+  public void observeEvent(@Observes @Important String message){
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By default event will be fired in current transaction, but you can change this behavior with &lt;code&gt;@Observes&lt;/code&gt; attribute  &lt;code&gt;during&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class TransactionEventObserver {
+    public void observeImportantMessage(@Observes(during = TransactionPhase.AFTER_SUCCESS) String message){
+        System.out.println(message);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Available next values:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IN_PROGRESS&lt;/li&gt;
+&lt;li&gt;BEFORE_COMPLETION&lt;/li&gt;
+&lt;li&gt;AFTER_COMPLETION&lt;/li&gt;
+&lt;li&gt;AFTER_FAILURE&lt;/li&gt;
+&lt;li&gt;AFTER_SUCCESS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now, let&apos;s take a look on dynamically qualification of CDI event. In the example below we will create observer to serve user events like login, logout, registration etc from the abstract event source. As was noticed earlier, event can be fired from different sources depends on your needs.&lt;/p&gt;
+&lt;p&gt;So, first we need to create &lt;code&gt;Qualifier&lt;/code&gt; with available events values&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Qualifier
+@Target({METHOD, FIELD, PARAMETER, TYPE})
+@Retention(RUNTIME)
+public @interface UserEvent {
+
+    Routes value();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;where Routes is enum with available values, for example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public enum Routes {
+  LOGIN,
+  LOGOUT,
+  REGISTRATION
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then we need to create child class of &lt;code&gt;javax.enterprise.util.AnnotationLiteral&lt;/code&gt; to possibility of inline instantiation of annotation type instance.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class UserEventBinding extends AnnotationLiteral&amp;lt;UserEvent&amp;gt; implements UserEvent {
+
+    Routes routes;
+
+    public UserEventBinding(Routes routes) {
+        this.routes = routes;
+    }
+
+    @Override
+    public Routes value() {
+        return routes;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, let&apos;s fire event with dynamically observer selection&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Named
+public class UserEventSource {
+
+    @Inject
+    private Event&amp;lt;String&amp;gt; userEvent;
+
+    public void fireEvent(Routes route){
+        userEvent.select(new UserEventBinding(route)).fire(&amp;quot;Instead of string you can use your object&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So, time to show how our Observer looks like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;import static Routes.*;
+...
+
+@Named
+public class UserObserver {
+
+    public void registration(@Observes @UserEvent(REGISTRATION) String eventData) {
+      ....
+    }
+
+    public void login(@Observes @UserEvent(LOGIN) String eventData) {
+      ....
+    }
+
+    public void logout(@Observes @UserEvent(LOGOUT) String eventData) {
+      ....
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;P.S. From Java EE 8 with CDI 2.0 you can use &lt;strong&gt;asynchronous CDI Events&lt;/strong&gt; whith &lt;code&gt;fireAsync&lt;/code&gt; method and  &lt;code&gt;@ObservesAsync&lt;/code&gt; annotation...&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Wildfly large request processing</title>
+      <link>https://kostenko.org/blog/2019/03/wildfly-large-request.html</link>
+      <pubDate>Tue, 26 Mar 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/03/wildfly-large-request.html</guid>
+      	<description>
+	&lt;p&gt;By default Undertow subsystem on Wildfly AS configured to process requests with &lt;code&gt;max-post-size&lt;/code&gt;= 10MB. So, in case your request larger than 10MB you will get&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;java.io.IOException: UT000020: Connection terminated as request was larger than 10485760
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To increase this parameter you can edit directly &lt;code&gt;standalone&lt;/code&gt; or &lt;code&gt;domain&lt;/code&gt; configuration, like&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;subsystem xmlns=&amp;quot;urn:jboss:domain:undertow:3.1&amp;quot;&amp;gt;
+  &amp;lt;buffer-cache name=&amp;quot;default&amp;quot;/&amp;gt;
+  &amp;lt;server name=&amp;quot;default-server&amp;quot;&amp;gt;
+    &amp;lt;http-listener name=&amp;quot;default&amp;quot; socket-binding=&amp;quot;http&amp;quot; max-post-size=&amp;quot;15728640&amp;quot; redirect-socket=&amp;quot;https&amp;quot; enable-http2=&amp;quot;true&amp;quot;/&amp;gt;
+    &amp;lt;https-listener name=&amp;quot;https&amp;quot; socket-binding=&amp;quot;https&amp;quot; max-post-size=&amp;quot;15728640&amp;quot; security-realm=&amp;quot;SSLRealm&amp;quot;/&amp;gt;
+....
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or use CLI commands as shown below:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;/subsystem=undertow/server=default-server/http-listener=default/:write-attribute(name=max-post-size,value=15728640)
+/subsystem=undertow/server=default-server/https-listener=https/:write-attribute(name=max-post-size,value=15728640)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Notice! If you are using Wildfly in domain mode with AJP load balancer, you also may need to change  &lt;code&gt;max-post-size&lt;/code&gt; for &lt;code&gt;ajp-listener&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;/subsystem=undertow/server=default-server/ajp-listener=ajp/:write-attribute(name=max-post-size,value=15728640)
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>My Hibernate Search introduction video</title>
+      <link>https://kostenko.org/blog/2019/03/hibernate-search-intro-video.html</link>
+      <pubDate>Wed, 20 Mar 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/03/hibernate-search-intro-video.html</guid>
+      	<description>
+	
+Have published my second YouTube video (about Hibernate Search and integration with Wildfly)!
+
+&lt;br/&gt;&lt;br/&gt;
+&lt;div class=&quot;row&quot;&gt;
+    &lt;iframe align =&quot;center&quot; class=&quot;col-md-offset-3 col-lg-6 col-md-6 col-sm-12 col-xs-12&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/RuGyErfhmL0&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>SQL trick. Conditional count for select clause</title>
+      <link>https://kostenko.org/blog/2019/03/sql-trick-conditional-count.html</link>
+      <pubDate>Sat, 16 Mar 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/03/sql-trick-conditional-count.html</guid>
+      	<description>
+	&lt;p&gt;To perform conditional logic in your SQL &lt;code&gt;SELECT&lt;/code&gt; clause you can use &lt;code&gt;CASE&lt;/code&gt; expression. Next SQL trick allows you perform conditional &lt;code&gt;count()&lt;/code&gt; with your query.&lt;/p&gt;
+&lt;p&gt;For example, to  select count of records with &lt;code&gt;id &amp;gt; 5&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;SQL:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sql&quot;&gt;SELECT SUM(CASE WHEN id &amp;gt; 5 THEN 1 ELSE 0 END) FROM Table
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;JPQL:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;entityManager.createQuery(&amp;quot;SELECT SUM(CASE WHEN b.id &amp;gt; 5 THEN 1 ELSE 0 END) FROM BlogEntity b&amp;quot;).getSingleResult()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Criteria API:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;CriteriaBuilder cb = em.getCriteriaBuilder();
+CriteriaQuery&amp;lt;Number&amp;gt; query = cb.createQuery(Number.class);
+Root&amp;lt;BlogEntity&amp;gt; blogEntity = query.from(BlogEntity.class);
+
+query.select(
+        cb.sum(
+                cb.&amp;lt;Number&amp;gt;selectCase()
+                        .when(cb.gt(blogEntity.get(&amp;quot;id&amp;quot;), 5), 1)
+                        .otherwise(0)
+        )
+);
+
+Number result = em.createQuery(query).getSingleResult();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Test cases source code available on  &lt;a href=&quot;https://github.com/kostenkoserg/jpa-examples/blob/master/src/test/java/org/kostenko/example/jpa/JpaConditionalCountTest.java&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>How to build ssh tunnel on Linux</title>
+      <link>https://kostenko.org/blog/2019/03/linux-build-ssh-tunnel.html</link>
+      <pubDate>Fri, 15 Mar 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/03/linux-build-ssh-tunnel.html</guid>
+      	<description>
+	&lt;p&gt;SSH tunneling is routing local network traffic through SSH to remote hosts. Can be used, for example, to  connect to the remote application that was bound on remote local port.&lt;/p&gt;
+&lt;p&gt;For example, to connect to mysql instance that was bound on remote local port &lt;code&gt;3306&lt;/code&gt; you can use:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ssh -L 3366:localhost:3306 [USERNAME]@remotehost.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or if you would like to connect with &lt;a href=&quot;https://kostenko.org/blog/2019/02/linux-generate-private-shh-key.html&quot;&gt;SSH keys&lt;/a&gt; :&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ssh -i [KEY_FILENAME] -L 3366:localhost:3306 [USERNAME]@remotehost.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After you can connect to the database, using your favorite tool on localhost:3366&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Hibernate Search introduction. Deploying on WildFly.</title>
+      <link>https://kostenko.org/blog/2019/02/wildfly-hibernate-search.html</link>
+      <pubDate>Thu, 21 Feb 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/02/wildfly-hibernate-search.html</guid>
+      	<description>
+	&lt;p&gt;Hibernate Search is a powerful solution to implement full text search capabilities (like google or amazon) in your EE application. Under the hood it will use Apache Lucene directly or over Elasticsearch to build the index. Hibernate Search can be easy integrated with JPA, Hibernate ORM, Infinispan and other sources. If you are use Wildfly - you are lucky, - Hibernate Search already integrated with last one.&lt;/p&gt;
+&lt;p&gt;So, will see how it works on practice in few simple steps...&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. Let&apos;s start with gradle project using EE and hibernate-search dependencies&lt;/strong&gt;&lt;br /&gt;
+&lt;code&gt;build.gradle:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;apply plugin: &apos;java&apos;
+apply plugin: &apos;war&apos;
+
+sourceCompatibility = &apos;1.8&apos;
+defaultTasks &apos;clean&apos;, &apos;build&apos;
+ext.libraryVersions = [
+    javaee                  : &apos;8.0&apos;,
+    wildfly                 : &apos;15.0.1.Final&apos;,
+    hibernatesearch         : &apos;5.11.1.Final&apos;,
+    hibernateentitymanager  : &apos;5.4.1.Final&apos;,
+    h2                      : &apos;1.4.198&apos;,
+    dom4j                   : &apos;2.1.1&apos;,
+    junit                   : &apos;4.12&apos;
+]
+configurations {
+    wildfly
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    wildfly &amp;quot;org.wildfly:wildfly-dist:${libraryVersions.wildfly}@zip&amp;quot;
+    providedCompile &amp;quot;javax:javaee-api:${libraryVersions.javaee}&amp;quot;
+    providedCompile &amp;quot;org.hibernate:hibernate-search-orm:${libraryVersions.hibernatesearch}&amp;quot;
+    testCompile &amp;quot;junit:junit:${libraryVersions.junit}&amp;quot;
+    testCompile &amp;quot;com.h2database:h2:${libraryVersions.h2}&amp;quot;
+    testCompile &amp;quot;org.hibernate:hibernate-entitymanager:${libraryVersions.hibernateentitymanager}&amp;quot;
+    testCompile &amp;quot;org.hibernate:hibernate-search-orm:${libraryVersions.hibernatesearch}&amp;quot;
+    testCompile &amp;quot;org.dom4j:dom4j:${libraryVersions.dom4j}&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;2. Create standart JPA entity with hibernate-search annotations&lt;/strong&gt;&lt;br /&gt;
+&lt;code&gt;src/main/java/org/.../BlogEntity.java:&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;package org.kostenko.example.wildfly.hibernatesearch;
+
+import javax.persistence.*;
+import org.hibernate.search.annotations.*;
+
+@Entity
+@Indexed
+public class BlogEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
+    @Field(store = Store.YES)
+    private String title;
+
+    @Column
+    @Field(store = Store.YES)
+    private String body;
+
+    // getters, setters
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Main Hibernate Search annotations:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;&lt;th&gt;Annotation    &lt;/th&gt;&lt;th&gt; Description&lt;/th&gt;&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;@Indexed      &lt;/td&gt;&lt;td&gt; Marks which entities shall be indexed; Allows override the index name. Only @Indexed entities can be searched.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;@Field        &lt;/td&gt;&lt;td&gt; Marks an entity property to be indexed. Supports various options to customize the indexing format: &lt;code&gt;store&lt;/code&gt; -  enum type indicating whether the value should be stored in the document. Defaults to &lt;code&gt;Store.NO&lt;/code&gt; (Field value will not be stored in the index. Storing of values can be helpful to use projections and restore objects directly from index instead of mapped ORM entity), &lt;code&gt;index&lt;/code&gt; -  enum defining whether the value should be indexed or not. Defaults to &lt;code&gt;Index.YES&lt;/code&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;@DocumentId   &lt;/td&gt;&lt;td&gt; Override the property being used as primary identifier in the index. Defaults to the property with JPA’s @Id. &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;@SortableField&lt;/td&gt;&lt;td&gt; Marks a property so that it will be indexed in such way to allow efficient sorting on it.&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;3. Add hibernate-search properties to persistence.xml&lt;/strong&gt;&lt;br /&gt;
+&lt;code&gt;src/test/resources/META-INF/persistence.xml :&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;persistence version=&amp;quot;2.0&amp;quot; xmlns=&amp;quot;http://java.sun.com/xml/ns/persistence&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xsi:schemaLocation=&amp;quot;http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd&amp;quot;&amp;gt;
+    &amp;lt;persistence-unit name=&amp;quot;myDSTest&amp;quot; transaction-type=&amp;quot;RESOURCE_LOCAL&amp;quot;&amp;gt;
+        &amp;lt;provider&amp;gt;org.hibernate.jpa.HibernatePersistenceProvider&amp;lt;/provider&amp;gt;
+        &amp;lt;class&amp;gt;org.kostenko.example.wildfly.hibernatesearch.BlogEntity&amp;lt;/class&amp;gt;
+        &amp;lt;exclude-unlisted-classes&amp;gt;false&amp;lt;/exclude-unlisted-classes&amp;gt;
+        &amp;lt;properties&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.dialect&amp;quot; value=&amp;quot;org.hibernate.dialect.HSQLDialect&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.hbm2ddl.auto&amp;quot; value=&amp;quot;create-drop&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.connection.driver_class&amp;quot; value=&amp;quot;org.hsqldb.jdbcDriver&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.connection.username&amp;quot; value=&amp;quot;sa&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.connection.password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.connection.url&amp;quot; value=&amp;quot;jdbc:hsqldb:mem:testdb&amp;quot;/&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.showSql&amp;quot; value=&amp;quot;true&amp;quot;/&amp;gt;
+            &amp;lt;!-- Hibernate Search --&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.search.default.directory_provider&amp;quot; value=&amp;quot;filesystem&amp;quot; /&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.search.default.indexBase&amp;quot; value=&amp;quot;/tmp/index1&amp;quot; /&amp;gt;
+            &amp;lt;property name=&amp;quot;hibernate.search.default.indexmanager&amp;quot; value=&amp;quot;near-real-time&amp;quot; /&amp;gt;
+        &amp;lt;/properties&amp;gt;
+    &amp;lt;/persistence-unit&amp;gt;
+&amp;lt;/persistence&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see from above, it is easy enough (just with few annotations) add Hibernate Search into your application. Now Hibernate will automatically build index each time the entity persisted, updated or removed through Hibernate ORM. The index can be stored in &lt;code&gt;ram&lt;/code&gt; or on  &lt;code&gt;filesystem&lt;/code&gt;. Others directory providers also available - refer official documentation for details.&lt;/p&gt;
+&lt;p&gt;So, time to do simple test and see how it works with &lt;strong&gt;Lucene queries&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;src/test/java/org/.../JpaHibernateSearchTest :&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class JpaHibernateSearchTest {
+
+    private static EntityManager entityManager;
+    private static FullTextEntityManager fullTextEntityManager;
+    private static QueryBuilder queryBuilder;
+
+    @BeforeClass
+    public static void init() {
+        entityManager = Persistence.createEntityManagerFactory(&amp;quot;myDSTest&amp;quot;).createEntityManager();
+        fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(BlogEntity.class).get();
+        for (int i = 0; i &amp;lt; 1000; i++) {
+            BlogEntity blogEntity = new BlogEntity();
+            blogEntity.setTitle(&amp;quot;Title&amp;quot; + i);
+            blogEntity.setBody(&amp;quot;BodyBody Body&amp;quot; + i + &amp;quot; look at my horse my horse is a amazing &amp;quot; + i);
+            entityManager.getTransaction().begin();
+            entityManager.persist(blogEntity);
+            entityManager.getTransaction().commit();
+        }
+        Assert.assertEquals(1000, entityManager.createQuery(&amp;quot;SELECT COUNT(b) FROM BlogEntity b&amp;quot;, Number.class).getSingleResult().intValue());
+    }
+    /**
+     * Keyword Queries - searching for a specific word.
+     */
+    @Test
+    public void shouldSearchByKeywordQuery() throws Exception {
+        Query query = queryBuilder.keyword().onFields(&amp;quot;title&amp;quot;, &amp;quot;body&amp;quot;).matching(&amp;quot;Body999&amp;quot;).createQuery();
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class); // wrap Lucene query in a javax.persistence.Query
+        List&amp;lt;BlogEntity&amp;gt; result = persistenceQuery.getResultList();// execute search
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(&amp;quot;Title999&amp;quot;, result.get(0).getTitle());
+    }
+    /**
+     * Fuzzy Queries - we can define a limit of “fuzziness”
+     */
+    @Test
+    public void shouldSearchByFuzzyQuery() throws Exception {
+        Query query = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(2).withPrefixLength(0).onField(&amp;quot;title&amp;quot;).matching(&amp;quot;TAtle999&amp;quot;).createQuery();
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List&amp;lt;BlogEntity&amp;gt; result = persistenceQuery.getResultList();
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(&amp;quot;Title999&amp;quot;, result.get(0).getTitle());
+    }
+    /**
+     * Wildcard Queries - queries for which a part of a word is unknown (&apos;?&apos; - single character, &apos;*&apos; - character sequence)
+     */
+    @Test
+    public void shouldSearchByWildcardQuery() throws Exception {
+        Query query = queryBuilder.keyword().wildcard().onField(&amp;quot;title&amp;quot;).matching(&amp;quot;?itle*&amp;quot;).createQuery();
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List&amp;lt;BlogEntity&amp;gt; result = persistenceQuery.getResultList();
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(1000, result.size());
+    }
+    /**
+     * Phrase Queries - search for exact or for approximate sentences
+     */
+    @Test
+    public void shouldSearchByPhraseQuery() throws Exception {
+        Query query = queryBuilder.phrase().withSlop(10).onField(&amp;quot;body&amp;quot;).sentence(&amp;quot;look amazing horse 999&amp;quot;).createQuery();
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List&amp;lt;BlogEntity&amp;gt; result = persistenceQuery.getResultList();
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(&amp;quot;Title999&amp;quot;, result.get(0).getTitle());
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the test above I used most basic use-cases. But even it enough to feel how power &lt;code&gt;Apache Lucene search engine&lt;/code&gt; is. And how easy it can be integrated with your application.  Please, refer to &lt;a href=&quot;https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/&quot;&gt;official documentation&lt;/a&gt; for advanced topics.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4. Use Hibernate Search as Wildfly module&lt;/strong&gt;&lt;br /&gt;
+As i already noticed - Hibernate Search included in Wildfly since version 10. It means that activation of this functionality is automatic in case you are using at least one entity with &lt;code&gt;org.hibernate.search.annotations.Indexed&lt;/code&gt;. So, all we need to show how it works together is just implement simple web service with similar to test logic and run it on the server.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;@Path(&amp;quot;/&amp;quot;)
+@Stateless
+public class HibernateSearchDemoEndpoint {
+
+    @PersistenceContext
+    EntityManager entityManager;
+
+    /**
+     * Persist 1000 entities and rebuild index
+     * @return
+     */
+    @GET
+    @Path(&amp;quot;/init&amp;quot;)
+    @Transactional
+    public Response init() {
+        int count = entityManager.createQuery(&amp;quot;SELECT COUNT(b) FROM BlogEntity b&amp;quot;, Number.class).getSingleResult().intValue();
+        long time = System.currentTimeMillis();
+        for (int i = count; i &amp;lt; count + 1000; i++) {
+            BlogEntity blogEntity = new BlogEntity();
+            blogEntity.setTitle(&amp;quot;Title&amp;quot; + i);
+            blogEntity.setBody(&amp;quot;Body Body Body&amp;quot; + i + &amp;quot; look at my horse my horse is a amazing &amp;quot; + i);
+            entityManager.persist(blogEntity);
+        }
+        time = System.currentTimeMillis() - time;
+        return Response.ok().entity(String.format(&amp;quot;1000 records persisted. Current records %s Execution time = %s ms.&amp;quot;, count + 1000, time)).build();
+    }
+
+    /**
+     * Search by index
+     * @param q - query string
+     * @return
+     */
+    @GET
+    @Path(&amp;quot;/search&amp;quot;)
+    public Response search(@QueryParam(&amp;quot;q&amp;quot;) String q) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(BlogEntity.class).get();
+        long time = System.currentTimeMillis();
+        Query query = queryBuilder.keyword().onFields(&amp;quot;title&amp;quot;, &amp;quot;body&amp;quot;).matching(q).createQuery();
+        javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, BlogEntity.class);
+        List&amp;lt;BlogEntity&amp;gt; result = persistenceQuery.getResultList();
+        time = System.currentTimeMillis() - time;
+        String resultStr = result.stream().map(Object::toString).collect(Collectors.joining(&amp;quot;,&amp;quot;));
+        return Response.ok().entity( String.format(&amp;quot;Found %s results. [%s] Execution time = %s ms.&amp;quot;,result.size(),resultStr,time)).build();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, let&apos;s add task  into our &lt;code&gt;build.gradle&lt;/code&gt; to run Wildfly directly from the project&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;task removeWildfly(type:Delete) {
+    delete &amp;quot;build/wildfly-${libraryVersions.wildfly}&amp;quot;
+}
+task resolveWildfly(type:Copy, dependsOn:removeWildfly) {
+    destinationDir = buildDir
+    from {zipTree(configurations.wildfly.singleFile)}
+}
+task run() {
+    dependsOn &apos;resolveWildfly&apos;
+    doLast {
+        copy {
+            from projectDir.toString() + &amp;quot;/build/libs/wildfly-hibernate-search-example.war&amp;quot;
+            into projectDir.toString() + &amp;quot;/build/wildfly-${libraryVersions.wildfly}/standalone/deployments&amp;quot;
+        }
+        exec {
+            workingDir = file(projectDir)
+            commandLine &amp;quot;./build/wildfly-${libraryVersions.wildfly}/bin/standalone.sh&amp;quot;, &amp;quot;--debug&amp;quot;, &amp;quot;5005&amp;quot;
+            ext.output = {
+                return standardOutput.toString()
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;run&lt;/code&gt; task above will unzip wildfly into project build directory, deploy application and start the server. So, to start - please do&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;gradle &amp;amp;&amp;amp; gradle run
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;check output to be sure that Hiberate created Index directory by provided in &lt;code&gt;persistence.xml&lt;/code&gt; path&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;...
+15:15:37,386 INFO  [org.hibernate.search.store.impl.DirectoryProviderHelper] (MSC service thread 1-3) HSEARCH000041: Index directory not found, creating: &apos;/tmp/index2/org.kostenko.example.wildfly.hibernatesearch.BlogEntity&apos;                                  
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and see result in the browser&lt;br /&gt;
+&lt;img src=&quot;/img/2019-02-hibernate-search-1.png&quot; alt=&quot;create_index&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/img/2019-02-hibernate-search-2.png&quot; alt=&quot;serach_by_index&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Example project source code available on &lt;a href=&quot;https://github.com/kostenkoserg/wildfly-hibernate-search-example&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>How to generate ssh keys on Linux</title>
+      <link>https://kostenko.org/blog/2019/02/linux-generate-private-shh-key.html</link>
+      <pubDate>Wed, 20 Feb 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/02/linux-generate-private-shh-key.html</guid>
+      	<description>
+	&lt;p&gt;Sometimes, by security or usability reasons authentication with SSH keys looks much better than passwords. To generate personal keys, please, do next:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Login your remote instance&lt;/li&gt;
+&lt;li&gt;Generate ssh keys by&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ssh-keygen -t rsa -f ~/.ssh/[KEY_FILENAME] -C [USERNAME]
+cat [KEY_FILENAME].pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Download private key ([KEY_FILENAME]) to your local PC&lt;/li&gt;
+&lt;li&gt;Try to connect from your local with key:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;chmod 400 [KEY_FILENAME]
+ssh -i [KEY_FILENAME] [USERNAME]@yourhost.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To disable root login and password based login refer to  &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; and edid next sections:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;PasswordAuthentication no
+PermitRootLogin no
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then reload ssh server&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo service ssh restart
+&lt;/code&gt;&lt;/pre&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>My first video</title>
+      <link>https://kostenko.org/blog/2019/02/github-jbake-blog-video.html</link>
+      <pubDate>Sat, 16 Feb 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/02/github-jbake-blog-video.html</guid>
+      	<description>
+	
+Have published my first YouTube video (about blogging with jbake)!
+
+&lt;br/&gt;&lt;br/&gt;
+&lt;div class=&quot;row&quot;&gt;
+    &lt;iframe align =&quot;center&quot; class=&quot;col-md-offset-3 col-lg-6 col-md-6 col-sm-12 col-xs-12&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/_0C2xTa8jsY&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Jbake. Add tags, multi languages support and analytics</title>
+      <link>https://kostenko.org/blog/2019/01/jbake-blog-improve.html</link>
+      <pubDate>Sat, 19 Jan 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/01/jbake-blog-improve.html</guid>
+      	<description>
+	&lt;h4&gt;1. Tags&lt;/h4&gt;
+&lt;p&gt;Jbake supports tagging out of the box. It means that engine will generate separate page for each tag. To enable this feature on your blog you need to change &lt;code&gt;render.tags&lt;/code&gt; property in your &lt;code&gt;jbake.properties&lt;/code&gt; file&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;render.tags=true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next  modify template file depends on where you whant to reneder tags. For this blog I am using freemarker templates and made desition to put tags as part of menu bar. So, chages of my &lt;code&gt;menu.ftl&lt;/code&gt; below:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;  &amp;lt;ul class=&amp;quot;dropdown-menu&amp;quot;&amp;gt;
+      &amp;lt;#list tags as tag&amp;gt;
+        &amp;lt;li&amp;gt;&amp;lt;a href=&amp;quot;${content.rootpath}${tag.uri}&amp;quot;&amp;gt;${tag.name}&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+      &amp;lt;/#list&amp;gt;
+  &amp;lt;/ul&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&apos;s is it!&lt;/p&gt;
+&lt;h4&gt;2. Multi languages&lt;/h4&gt;
+&lt;p&gt;Now let&apos;s talk about multilanguage support. It is pity, but Jbake does not support blogging in different languages at the same time by default. So, we need a some hacks to do that. First idea  I had was about two the same sites  in different languages. It is not big deal, but in case changes for  templates, assets or images  you will need to do it twice. What is not so good.&lt;/p&gt;
+&lt;p&gt;Instead of full copy  I did additional directory &lt;code&gt;content_ru&lt;/code&gt; just with content.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;├── assets  
+├── content  
+├── content_ru
+├── templates
+├── jbake.properties
+├── README.md  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In &lt;code&gt;jbake.properies&lt;/code&gt; you can specify which content should be used.&lt;/p&gt;
+&lt;p&gt;So, I  choosen english as default language and bake my blog in the next way:&lt;/p&gt;
+&lt;p&gt;bakeblog.sh:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;#!/bin/bash
+
+# Helper script to bake the blog
+# Author: kostenko
+
+export PATH=&amp;quot;/opt/jbake-2.6.3-bin/bin&amp;quot;:$PATH
+rm -R ./output
+# Building en version
+export JBAKE_OPTS=&amp;quot;-Duser.language=EN&amp;quot;
+jbake -b
+# Build ru version
+export JBAKE_OPTS=&amp;quot;-Duser.language=RU&amp;quot;
+mv jbake.properties jbake.properties.orig
+cat jbake.properties.orig &amp;gt;&amp;gt; jbake.properties
+echo &amp;quot;content.folder=content_ru&amp;quot; &amp;gt;&amp;gt; jbake.properties
+jbake -b . output/ru
+# cleanup
+rm jbake.properties
+mv jbake.properties.orig jbake.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let’s add to the menu bar links to choose language:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;!-- switch language --&amp;gt;
+&amp;lt;ul class=&amp;quot;nav navbar-nav navbar-right&amp;quot;&amp;gt;
+  &amp;lt;li&amp;gt;&amp;lt;a href=&amp;quot;/&amp;quot;&amp;gt;en&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;&amp;lt;a href=&amp;quot;/ru&amp;quot;&amp;gt;ru&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Done!&lt;/p&gt;
+&lt;h4&gt;3. Analytics&lt;/h4&gt;
+&lt;p&gt;To enable &lt;a href=&quot;https://analytics.google.com&quot;&gt;Google analytics&lt;/a&gt; functionality on your Jbake based  site, you need to do few simple steps:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Register your resource on  google analytics&lt;/li&gt;
+&lt;li&gt;Get provided by GA code snippet&lt;/li&gt;
+&lt;li&gt;Paste provided snippet to your &lt;code&gt;header.ftl&lt;/code&gt; as first block of &lt;code&gt;&amp;lt;HEAD&amp;gt;&lt;/code&gt; section.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;!-- Global site tag (gtag.js) - Google Analytics --&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;script async src=&amp;quot;https://www.googletagmanager.com/gtag/js?id=&amp;lt;YOUR_GA_ID&amp;gt;&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+  &amp;lt;script&amp;gt;
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag(&apos;js&apos;, new Date());
+    gtag(&apos;config&apos;, &apos;&amp;lt;YOUR_GA_ID&amp;gt;&apos;);
+  &amp;lt;/script&amp;gt;
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Congrats! You are ready to blogging!&lt;/p&gt;
+&lt;p&gt;P.S. If you want to have comments for your posts, - refer to the services like &lt;a href=&quot;https://disqus.com/&quot;&gt;Disqus&lt;/a&gt; - it is aloso easy to integrate and nice to have for some reasons.&lt;br /&gt;
+P.P.S. Blog sources available on &lt;a href=&quot;https://github.com/kostenkoserg/kostenko.blog.src&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>Start blogging with GitHub and Jbake</title>
+      <link>https://kostenko.org/blog/2019/01/github-jbake-blog.html</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/01/github-jbake-blog.html</guid>
+      	<description>
+	&lt;p&gt;Hosting of personal blog, company blog or landing page of your project - easy enough with &lt;a href=&quot;https://pages.github.com/&quot;&gt;github&lt;/a&gt;. In this post i will try to explain how to do it in two steps.&lt;/p&gt;
+&lt;h4&gt;Step 1. Deploy static content to GitHub&lt;/h4&gt;
+&lt;p&gt;First of all we need an account on &lt;a href=&quot;https://github.com/&quot;&gt;github&lt;/a&gt; and base knoweledges about  &lt;a href=&quot;https://git-scm.com/&quot;&gt;git&lt;/a&gt;. Actually, as i know, another popular web-based Git-repository  &lt;a href=&quot;https://gitlab.com/&quot;&gt;GitLab&lt;/a&gt; also supports hosting of static content, so you can choose what you like more.&lt;/p&gt;
+&lt;p&gt;Now you need to create new project named as [account].github.io For example: kostenkoserg.github.io&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/ru/img/my_github_srcshot.png&quot; alt=&quot;github pages project screenshot&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Actually, we already did all necessary preparation for our hosting. Now just clone the project, create simple index.html and push it back to the repository:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;$ git clone https://github.com/kostenkoserg/kostenkoserg.github.io.git
+$ cd kostenkoserg.github.io
+$ echo &amp;quot;Hello World!&amp;quot;
+$ git commit -m &amp;quot;my first github page&amp;quot;
+$ git push
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Congrats! Our new site currently available over world wide web: &lt;a href=&quot;https://kostenkoserg.github.io&quot;&gt;https://kostenkoserg.github.io&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/ru/img/first_github_page.png&quot; alt=&quot;first_github_page&quot; /&gt;&lt;br /&gt;
+By the way  you also can use existing domain for your GitHub based site. For do that you just need to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Add &lt;code&gt;A&lt;/code&gt; records to your DNS provider with GitHub IP&apos;s&lt;/li&gt;
+&lt;li&gt;Provide in GitHub project settings your DNS name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Step 2. Static blog generation with JBake&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://jbake.org/&quot;&gt;Jbake&lt;/a&gt; is a java based open source solution for static site generation. For JBake available integration with Gradle and Maven. Jbake out of the box supports Bootstrap and can be easy integrated with other CSS frameworks. As template engines JBake supports Freemarker, Groovy, Thymeleaf and Jade.&lt;/p&gt;
+&lt;p&gt;To start with let&apos;s download distribution from &lt;a href=&quot;https://jbake.org/download.html&quot;&gt;project site&lt;/a&gt; and extract the package to your favorite directory. Now we can generate static site with example content&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;$ /opt/jbake/bin/jbake -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As result we should have site template with next structire:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;├── assets
+│   ├── css
+│   │   ├── asciidoctor.css
+│   │   ├── base.css
+│   │   ├── bootstrap.min.css
+│   │   └── prettify.css
+│   ├── favicon.ico
+│   ├── fonts
+│   │   ├── ...
+│   └── js
+│       ├── bootstrap.min.js
+│       ├── html5shiv.min.js
+│       ├── jquery-1.11.1.min.js
+│       └── prettify.js
+├── content
+│   ├── about.html
+│   └── blog
+│       └── 2013
+│           ├── first-post.html
+│           ├── second-post.md
+│           └── third-post.adoc
+├── jbake.properties
+└── templates
+    ├── archive.ftl
+    ├── feed.ftl
+    ├── footer.ftl
+    ├── header.ftl
+    ├── index.ftl
+    ├── menu.ftl
+    ├── page.ftl
+    ├── post.ftl
+    ├── sitemap.ftl
+    └── tags.ftl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&apos;s generate site from above&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;/opt/jbake/bin/jbake -b
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After that we will have direcory &lt;code&gt;output&lt;/code&gt; with our static site.&lt;br /&gt;
+To check the result you can start embedded server and open  &lt;a href=&quot;http://localhost:8820/&quot;&gt;http://localhost:8820/&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;/opt/jbake/bin/jbake -s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;/ru/img/jbake_default_site.png&quot; alt=&quot;jbake_default_site&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Well done! Our static site ready for blogging. You just need edit content of  &lt;code&gt;content&lt;/code&gt; directory, regenerate site and push   &lt;code&gt;output&lt;/code&gt;  to GitHub repository.&lt;/p&gt;
+&lt;p&gt;Jbake supports few types of content: HTML, Markdown, AsciiDoc, - that is greate and allow you blogging with your favorite text editor. For this blog I am using &lt;a href=&quot;https://atom.io/&quot;&gt;Atom&lt;/a&gt; и &lt;a href=&quot;https://www.markdownguide.org/basic-syntax/&quot;&gt;Markdown&lt;/a&gt;.&lt;/p&gt;
+
+	</description>
+    </item>
+    <item>
+      <title>My first blog post</title>
+      <link>https://kostenko.org/blog/2019/01/start-blogging.html</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0200</pubDate>
+      <guid isPermaLink="false">blog/2019/01/start-blogging.html</guid>
+      	<description>
+	&lt;p&gt;I wanted to start a my own tech blog long ago. But by different reasons have started only now. First i wanted to do own blog engine, after spent lot of time to searching for nice look and feel  and  then sorting out popular solutions like wordpres, wix, blogger etc...&lt;/p&gt;
+&lt;p&gt;After all i found &lt;a href=&quot;https://pages.github.com/&quot;&gt;pages.github.io&lt;/a&gt; with their static site generator &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;. Last one looks good from different points of view. It is simple, it is for free, it is quick enough, it is stable.  Finally if GitHub it is a pretty nice place for work with source code why it can&apos;t be the same for a blog source ?&lt;/p&gt;
+&lt;p&gt;While investigating Jekyll (written on Rubby), i found  JVM based Jekyll analog - project &lt;a href=&quot;https://jbake.org/&quot;&gt;JBake&lt;/a&gt;. Оf course last one seemed to me most closer.&lt;/p&gt;
+&lt;p&gt;So, decision is made. Let&apos;s go!&lt;/p&gt;
+
+	</description>
+    </item>
+
+  </channel> 
+</rss>
