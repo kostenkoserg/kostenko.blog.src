@@ -21,3 +21,5 @@ Be careful with redelivery configuration as in case **"poisen message"** it can 
 When you use container-managed transactions, you can use next `MessageDrivenContext` methods:
  * setRollbackOnly: marks the current transaction to rollback.
  * getRollbackOnly: check current transaction has been marked for rollback or not.
+
+In case bean-managed transactions you need to manually control transaction by `UserTransaction` methods and you also can set the activation configuration property acknowledgeMode to `Auto-acknowledge` or `Dups-ok-acknowledge` to specify how the message received by the message-driven bean to be acknowledged.
