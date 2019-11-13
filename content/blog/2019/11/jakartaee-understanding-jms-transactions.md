@@ -18,13 +18,14 @@ In both cases above, when message was returned to the destination, container wil
 ```
 Be careful with redelivery configuration as in case **"poisen message"** it can negative affect performance of your application or even server.
 
-When you use container-managed transactions, you can use next `MessageDrivenContext` methods:
+When you use container-managed transactions, you can invoke next `MessageDrivenContext` methods:
+
  * setRollbackOnly: marks the current transaction to rollback.
  * getRollbackOnly: check current transaction has been marked for rollback or not.
 
 In case bean-managed transactions you need to manually control transaction by `UserTransaction` methods and you also can set the activation configuration property acknowledgeMode to `Auto-acknowledge` or `Dups-ok-acknowledge` to specify how the message received by the message-driven bean to be acknowledged.
 
-Ok. Let's pay attention on typical use cases and potentially issues with default configurations. Often enough MDB uses to do relatively long tasks that should be executed asynchronously. So typical message bean in this case will looks like:
+Ok. Let's pay attention on typical use cases and potentially issues with default configurations. Often enough developers use MDB to do relatively long tasks that should be executed asynchronously. So typical message bean in this case will looks like:
 
 ```java
 @JMSDestinationDefinition(
@@ -60,7 +61,7 @@ public class TxRequiredMessagerDrivenBean implements MessageListener {
     }
 }
 ```
-Now take a look to result of execution our bean :
+Now take a look to result of our bean invocation:
 ```java
 INFO  (Thread-1 (ActiveMQ-client-global-threads)) Got new message.
 INFO  (Thread-1 (ActiveMQ-client-global-threads)) Hello TxRequiredMessagerDrivenBean!
@@ -75,6 +76,7 @@ WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012381: Action
 WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012108: CheckedAction::check - atomic action 0:ffff7f000101:3b3ecbca:5dcc2894:13 aborting with 1 threads active!
 ...
 WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012121: TransactionReaper::doCancellations worker Thread[Transaction Reaper Worker 0,5,main] successfully canceled TX 0:ffff7f000101:3b3ecbca:5dcc2894:13
+...
 INFO  (Thread-3 (ActiveMQ-client-global-threads)) Got new message.
 INFO  (Thread-3 (ActiveMQ-client-global-threads)) Hello TxRequiredMessagerDrivenBean!
 INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 300 sec.
@@ -92,3 +94,23 @@ WARN  [org.apache.activemq.artemis.ra] (Thread-1 (ActiveMQ-client-global-threads
 ...
 WARN  [org.apache.activemq.artemis.core.client] (Thread-1 (ActiveMQ-client-global-threads)) [] AMQ212009: resetting session after failure
 ```
+From log above we can see that:
+
+ * `TransactionAttributeType.REQUIRED` was used by default;
+ * Started transaction was canceled by default timeout in `300 sec`;
+ * Container detected TX cancellation - did message redelivery and MDB starts new transaction;
+ * Old thread continue work with first message processing, but the transaction already is not active;
+
+So, keep this behavior in mind if you planning to play with long tasks and Message Driven Beans then depends on requirements few **solutions** is possible here:
+
+ * Avoid long transaction usage. If long TX is not necessary - always use `TransactionAttributeType.NOT_SUPPORTED`
+ * Increase default transaction timeout
+ * Use an annotation @ActivationConfigProperty(propertyName="transactionTimeout", propertyValue="xxx") to specify custom transaction timeout for MDB like:
+ ```java
+ @MessageDriven(activationConfig = {
+     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = TxRequiredMessagerDrivenBean.TX_REQUIRED_QUEUE),
+     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
+     @ActivationConfigProperty(propertyName = "transactionTimeout", propertyValue="500")
+ })
+ ```  
+Source code of test application available on [GitHub](https://github.com/kostenkoserg/ee-jms-examples)
