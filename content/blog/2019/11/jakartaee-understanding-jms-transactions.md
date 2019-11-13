@@ -1,5 +1,5 @@
 title=Understanding JMS(MDB) transaction scopes in JakartaEE application
-date=2019-11-11
+date=2019-11-14
 type=post
 tags=JakartaEE, JMS, Wildfly
 status=published
