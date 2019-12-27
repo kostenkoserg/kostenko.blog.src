@@ -3,7 +3,7 @@
 # Helper script to bake the blog
 # Author: kostenko
 
-export PATH="/opt/jbake-2.6.3-bin/bin":$PATH
+export PATH="/opt/jbake/bin":$PATH
 rm -R ./output
 # Building en version
 export JBAKE_OPTS="-Duser.language=EN"
