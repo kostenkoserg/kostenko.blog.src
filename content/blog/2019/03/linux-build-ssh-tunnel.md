@@ -1,7 +1,7 @@
 title=How to build ssh tunnel on Linux
 date=2019-03-15
 type=post
-tags=Linux
+tags=linux
 status=published
 ~~~~~~
 

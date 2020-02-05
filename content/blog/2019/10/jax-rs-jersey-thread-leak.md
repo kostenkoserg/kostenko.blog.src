@@ -1,7 +1,7 @@
 title=JAX-RS Client ThreadPool leak
 date=2019-10-04
 type=post
-tags=WildFly,JAX-RS
+tags=wildfly,jax-rs
 status=published
 ~~~~~~
 

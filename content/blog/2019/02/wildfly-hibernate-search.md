@@ -1,7 +1,7 @@
 title=Hibernate Search introduction. Deploying on WildFly.
 date=2019-02-21
 type=post
-tags=Hibernate, Wildfly, JPA
+tags=hibernate, wildfly, jpa
 status=published
 ~~~~~~
 

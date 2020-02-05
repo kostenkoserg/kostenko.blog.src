@@ -1,7 +1,7 @@
 title=Migration from Wildfly 10 to Wildfly 18
 date=2019-10-22
 type=post
-tags=Wildfly
+tags=wildfly
 status=published
 ~~~~~~
 

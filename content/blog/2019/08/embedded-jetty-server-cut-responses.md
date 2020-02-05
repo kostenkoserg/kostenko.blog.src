@@ -1,7 +1,7 @@
 title=Embedded Jetty server truncates responses
 date=2019-08-06
 type=post
-tags=Jetty
+tags=jetty
 status=published
 ~~~~~~
 

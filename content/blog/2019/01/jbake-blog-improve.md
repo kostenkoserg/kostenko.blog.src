@@ -1,7 +1,7 @@
 title= Jbake. Add tags, multi languages support and analytics
 date=2019-01-19
 type=post
-tags=JBake
+tags=jbake
 status=published
 ~~~~~~
 #### 1. Tags

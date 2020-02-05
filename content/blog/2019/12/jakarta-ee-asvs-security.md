@@ -1,7 +1,7 @@
 title=Why Jakarta EE beats other java solutions from security point of view
 date=2019-12-27
 type=post
-tags=Jakarta EE, Security
+tags=jakartaee, security
 status=published
 ~~~~~~
 No one care about security until security incident. In case enterprise development last one can costs too much, so any preventive steps can help.  Significant part part of the OWASP Application Security Verification Standard (**ASVS**) reads:

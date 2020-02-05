@@ -1,7 +1,7 @@
 title=How to catch 'kill' signals in java
 date=2019-08-07
 type=post
-tags=Java, Linux
+tags=java, linux
 status=published
 ~~~~~~
 

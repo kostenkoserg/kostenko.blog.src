@@ -1,7 +1,7 @@
 title=How to generate ssh keys on Linux
 date=2019-02-20
 type=post
-tags=Linux
+tags=linux
 status=published
 ~~~~~~
 

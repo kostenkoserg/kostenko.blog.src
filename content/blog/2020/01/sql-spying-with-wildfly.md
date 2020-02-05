@@ -1,7 +1,7 @@
 title=Logging for JPA SQL queries with Wildfly
 date=2020-01-10
 type=post
-tags=JPA, SQL, wildfly, logging
+tags=jpa, sql, wildfly, logging
 status=published
 ~~~~~~
 Logging for real SQL queries is very important in case using any ORM solution, - as you never can be sure **which** and **how many** requests will send JPA provider to do `find`, `merge`, `query` or some other operation.

@@ -1,7 +1,7 @@
 title=JMS Duplicate Message Detection with Wildfly
 date=2019-07-19
 type=post
-tags=Jakarta EE,Java EE,JMS,Wildfly
+tags=jakartaee, jms, wildfly
 status=published
 ~~~~~~
 

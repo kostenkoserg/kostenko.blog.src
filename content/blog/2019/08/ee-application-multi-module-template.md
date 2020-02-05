@@ -1,7 +1,7 @@
 title=Jakarta EE application multi module gradle template
 date=2019-08-08
 type=post
-tags=Jakarta EE,Gradle
+tags=jakartaee, gradle
 status=published
 ~~~~~~
 In this post i will share simple and useful **gradle** template to organize multi module Jakarta EE application. We will implement typical one which consists from REST controller (**module1**) and some main logic (**module2**). Big picture of our application architecture is:

@@ -1,7 +1,7 @@
 title=Jakarta Batch garbage collection with Jberet
 date=2019-11-04
 type=post
-tags=Jakarta, Batch, Wildfly, Jberet
+tags=jakartaee, batch, wildfly, jberet
 status=published
 ~~~~~~
 

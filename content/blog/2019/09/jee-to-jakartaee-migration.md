@@ -1,7 +1,7 @@
 title=Migration from JEE to JakartaEE
 date=2019-09-30
 type=post
-tags=JakartaEE, WildFly
+tags=jakartaee, wildfly
 status=published
 ~~~~~~
 

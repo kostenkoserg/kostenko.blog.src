@@ -1,7 +1,7 @@
 title=How to setup Darcula LAF on Netbeans 11
 date=2019-12-26
 type=post
-tags=IDE
+tags=ide
 status=published
 ~~~~~~
 It is pity, but Apache Netbeans IDE still comes without support default **dark** mode. Enabling `Netbeans 8.2 Plugin portal` does not have any effect, so to use plugins from previous versions we need to add `New Provider` (Tools->Plugins) with next URL:

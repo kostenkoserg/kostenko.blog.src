@@ -1,7 +1,7 @@
 title=SQL trick. Insert if not exists
 date=2019-07-24
 type=post
-tags=SQL
+tags=sql
 status=published
 ~~~~~~
 

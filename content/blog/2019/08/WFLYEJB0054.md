@@ -1,7 +1,7 @@
 title=WFLYEJB0054: Failed to marshal EJB parameters
 date=2019-08-05
 type=post
-tags=Wildfly
+tags=wildfly
 status=published
 ~~~~~~
 

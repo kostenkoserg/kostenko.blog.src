@@ -1,7 +1,7 @@
 title=JBake blog pagination
 date=2019-04-10
 type=post
-tags=JBake
+tags=jbake
 status=published
 ~~~~~~
 

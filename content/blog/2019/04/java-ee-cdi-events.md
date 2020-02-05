@@ -1,7 +1,7 @@
 title=Java EE CDI events. Dynamic qualifier.
 date=2019-04-08
 type=post
-tags=Java EE, CDI
+tags=jakartaee, cdi
 status=published
 ~~~~~~
 

@@ -1,7 +1,7 @@
 title=Design DSL API in Java
 date=2019-05-27
 type=post
-tags=Java, API
+tags=java, api
 status=published
 ~~~~~~
 

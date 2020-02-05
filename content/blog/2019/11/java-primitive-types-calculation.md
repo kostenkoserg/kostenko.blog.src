@@ -1,7 +1,7 @@
 title=Never use Java primitives for math calculation
 date=2019-11-08
 type=post
-tags=Java
+tags=java
 status=published
 ~~~~~~
 

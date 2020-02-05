@@ -1,7 +1,7 @@
 title=Wildfly domain mode cluster and load balancing from the box
 date=2019-04-15
 type=post
-tags=Wildfly
+tags=wildfly
 status=published
 ~~~~~~
 

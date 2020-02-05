@@ -1,7 +1,7 @@
 title=Wildfly large request processing
 date=2019-03-26
 type=post
-tags=Wildfly
+tags=wildfly
 status=published
 ~~~~~~
 

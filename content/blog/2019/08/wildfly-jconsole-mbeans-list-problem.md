@@ -1,7 +1,7 @@
 title=Wildfly JMX connection problems (so slow and terminates)
 date=2019-08-19
 type=post
-tags=Wildfly, JMX
+tags=wildfly, jmx
 status=published
 ~~~~~~
 JMX (Java Management Extensions ) - is a technology that provide us possibility to monitoring applications (application servers) by **MBeans (Managed Bean)** objects.

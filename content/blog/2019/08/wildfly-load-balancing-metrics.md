@@ -1,7 +1,7 @@
 title=Wildfly. Configure load balancing metrics
 date=2019-08-06
 type=post
-tags=Wildfly
+tags=wildfly
 status=published
 ~~~~~~
 
@@ -17,7 +17,7 @@ Wildfly subsystem `mod_cluster` provide us several predefined metric types to de
   * **send-traffic**: based on outgoing requests traffic
   * **receive-traffic**: based on incoming requests POST traffic
   * **busyness**: computes based on amount of Thread from Thread Pool usage that are busy servicing requests
-  * **connection-pool**: based on JCA connections
+
 
 As well you also can configure **weight** (impact of a metric respect to other metrics) and **capacity** properties;
 Below is example, how to change default based on CPU balancing to balancing based on busyness + CPU:

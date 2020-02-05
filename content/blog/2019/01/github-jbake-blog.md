@@ -1,7 +1,7 @@
 title=Start blogging with GitHub and Jbake
 date=2019-01-18
 type=post
-tags=GitHub, JBake
+tags=github, jbake
 status=published
 ~~~~~~
 

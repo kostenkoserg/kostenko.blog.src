@@ -1,7 +1,7 @@
 title=Improve performance of random number generation
 date=2019-04-18
 type=post
-tags=Performance,Linux
+tags=performance,linux
 status=published
 ~~~~~~
 Directly or indirectly every developer uses random number generation during application development by different reasons:

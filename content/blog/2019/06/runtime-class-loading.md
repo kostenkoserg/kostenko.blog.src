@@ -1,7 +1,7 @@
 title=How to use custom ClassLoader to load jars in runtime
 date=2019-06-28
 type=post
-tags=Java
+tags=java
 status=published
 ~~~~~~
 

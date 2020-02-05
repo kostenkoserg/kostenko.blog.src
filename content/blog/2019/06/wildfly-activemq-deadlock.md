@@ -1,7 +1,7 @@
 title=Wildfly active-mq subsystem deadlock
 date=2019-06-29
 type=post
-tags=Wildfly
+tags=wildfly, activemq
 status=published
 ~~~~~~
 

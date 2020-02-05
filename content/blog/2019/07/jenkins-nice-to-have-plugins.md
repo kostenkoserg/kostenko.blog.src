@@ -1,7 +1,7 @@
 title=Jenkins. Nice to have plugins
 date=2019-07-05
 type=post
-tags=CI, Jenkins
+tags=ci, jenkins
 status=published
 ~~~~~~
 
