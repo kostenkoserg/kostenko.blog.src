@@ -1,5 +1,5 @@
 title=ISPN000299: Unable to acquire lock after 15 seconds for key
-date=2020-01-10
+date=2020-02-05
 type=post
 tags=wildfly, infinispan
 status=published
