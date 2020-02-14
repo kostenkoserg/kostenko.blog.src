@@ -31,10 +31,35 @@ This code looks pretty clear, but on my opinion **you should NOT USE this style*
 To avoid potential issues i recommend to follow next rules:
 
  * Avoid using of `@OneToMany` at all
- * Use `@ManyToOne` by **ID** instead of Entity
+ * Use `@ManyToOne` to build constrains but use **ID** instead of Entity
 
-  ```java
-  @ManyToOne(targetEntity = Author.class)
-  private long authorId;
-  ```
+Unfortunately, simple snippet below does not work as expected in case `persist`
+```java
+@ManyToOne(targetEntity = Author.class)
+private long authorId;
+```
+But,we can use next one instead of
+```java
+@JoinColumn(name = "authorId", insertable = false, updatable = false)
+@ManyToOne(targetEntity = Author.class)
+private Author author;
+
+private long authorId;
+
+public long getAuthorId() {
+    return authorId;
+}
+
+public void setAuthorId(long authorId) {
+    this.authorId = authorId;
+}
+```
+Agree, last case looks not clear from specification point of view and maybe you would like to use standard `@ManyToOne` mapping with LAZY load instead of default. In this case use `EntityManager.getReference` to avoid extra queries for selecting Author to persist child Book entity, like:
+```java
+Book book = new Book();
+book.setName("Test");
+book.setAuthor(entityManager.getReference(Author.class, authorId));
+entityManager.persist(book);
+```
+
 Hope, this two simple rules helps you enjoy all power of JPA with KISS and decreasing count of complexity.
