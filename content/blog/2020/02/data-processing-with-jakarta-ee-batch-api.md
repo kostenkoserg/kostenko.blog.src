@@ -2,7 +2,7 @@ title=Load huge amount of data with Jakarta EE Batch
 date=2020-02-10
 type=post
 tags=jakartaee, jberet, wildfly, batch, jsr532
-status=published
+
 ~~~~~~
 Processing huge amount of data is a challenge for every enterprise system. Jakarta EE specifications provides useful approach to get it done through **Jakarta Batch** (JSR-352):
 
