@@ -31,7 +31,7 @@ This code looks pretty clear, but on my opinion **you should NOT USE this style*
 To avoid potential issues i recommend to follow next rules:
 
  * Avoid using of `@OneToMany` at all
- * Use `@ManyToOne` to build constrains but use **ID** instead of Entity
+ * Use `@ManyToOne` to build constrains but work with  **ID** instead of Entity
 
 Unfortunately, simple snippet below does not work as expected in case `persist`
 ```java
@@ -53,13 +53,6 @@ public long getAuthorId() {
 public void setAuthorId(long authorId) {
     this.authorId = authorId;
 }
-```
-Agree, last case looks not clear from specification point of view and maybe you would like to use standard `@ManyToOne` mapping with LAZY load instead of default. In this case use `EntityManager.getReference` to avoid extra queries for selecting Author to persist child Book entity, like:
-```java
-Book book = new Book();
-book.setName("Test");
-book.setAuthor(entityManager.getReference(Author.class, authorId));
-entityManager.persist(book);
 ```
 
 Hope, this two simple rules helps you enjoy all power of JPA with KISS and decreasing count of complexity.
