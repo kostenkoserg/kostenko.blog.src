@@ -100,5 +100,11 @@ quarkus.swagger-ui.always-include=true
 ```
 Second part of this post is a **[JWT role based access control(RBAC)](https://github.com/eclipse/microprofile-jwt-auth)** for microservice endpoints. JSON Web Tokens are an open, industry standard  [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties and below we will see how easy it can be integrated in your application with Eclipse Microprofile.
 
-As JWT suggests usage of cryptography - we need to generate public\private key pair first:
- 
+As JWT suggests usage of cryptography - we need to generate public\private key pair before start coding:
+```bash
+# Generate a private key
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+
+# Derive the public key from the private key
+openssl rsa -pubout -in private_key.pem -out public_key.pem
+```
