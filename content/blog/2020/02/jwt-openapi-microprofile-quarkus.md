@@ -89,4 +89,16 @@ First let's take a brief review of used **[Open API](https://github.com/eclipse/
  * `@Operation(summary = "Return user data by provided JWT token")` - Describes an operation or typically a HTTP method against a specific path.
  * `@Schema(implementation = User.class)` - Allows the definition of input and output data types.
 
-To more details, please refer to the **[MicroProfile OpenAPI Specification](https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.adoc)** 
+To more details about Open API annotations, please refer to the **[MicroProfile OpenAPI Specification](https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.adoc)**.
+
+After start the application, you will able to get your Open API description in the  **.yaml** format by the next URL http://0.0.0.0:8080/openapi or even enjoy **Swagger UI** as well by http://0.0.0.0:8080/swagger-ui/ :
+![microprofile, openapi, swagger-ui](/img/2020-02-swagger-ui.png)
+
+**Note** By default swagger-ui available in the dev mode only. If you would like to keep swagger on production, - add next property to your `application.properties`
+```java
+quarkus.swagger-ui.always-include=true
+```
+Second part of this post is a **[JWT role based access control(RBAC)](https://github.com/eclipse/microprofile-jwt-auth)** for microservice endpoints. JSON Web Tokens are an open, industry standard  [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties and below we will see how easy it can be integrated in your application with Eclipse Microprofile.
+
+As JWT suggests usage of cryptography - we need to generate public\private key pair first:
+ 
