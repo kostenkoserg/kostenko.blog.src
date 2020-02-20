@@ -1,5 +1,5 @@
 title=Well secured and documented REST API with Eclipse Microprofile and Quarkus
-date=2020-02-15
+date=2020-02-20
 type=post
 tags=microprofile, jwt, quarkus, openapi, swagger
 status=published
