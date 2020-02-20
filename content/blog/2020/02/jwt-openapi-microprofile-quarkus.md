@@ -38,13 +38,8 @@ compileJava {
     options.compilerArgs << '-parameters'
 }
 ```
-Now we are ready to improve standard JAX-RS service with OpenAPI and JWT stuff.
+Now we are ready to improve standard **JAX-RS** service with **OpenAPI** and **JWT** stuff:
 ```java
-...
-import javax.annotation.security.*;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.openapi.annotations.*;
-
 @RequestScoped
 @Path("/user")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -54,8 +49,8 @@ import org.eclipse.microprofile.openapi.annotations.*;
 public class UserResource {
 
     @Inject
-    @Claim("userId")
-    Optional<JsonNumber> userId;
+    @Claim("user_name")
+    Optional<JsonString> userName;
 
     @POST
     @PermitAll
@@ -65,7 +60,9 @@ public class UserResource {
         @APIResponse(responseCode = "200", description = "JWT successfuly created.", content = @Content(schema = @Schema(implementation = User.class)))})
     @Operation(summary = "Create JWT token by provided user name")
     public User getToken(@PathParam("userName") String userName) {
-        return null;
+        User user = new User();
+        user.setJwt(TokenUtils.generateJWT(userName));
+        return user;    
     }
 
     @GET
@@ -77,7 +74,9 @@ public class UserResource {
         @APIResponse(responseCode = "200", description = "Return user data", content = @Content(schema = @Schema(implementation = User.class)))})
     @Operation(summary = "Return user data by provided JWT token")
     public User getUser() {
-        return new User();
+        User user = new User();
+        user.setName(userName.get().toString());
+        return user;
     }
 }
 ```
@@ -108,3 +107,49 @@ openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:204
 # Derive the public key from the private key
 openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
+Now we are able to generate JWT and sign data with our private key in the, for example, next way:
+```java
+public static String generateJWT(String userName) throws Exception {
+
+    Map<String, Object> claimMap = new HashMap<>();
+    claimMap.put("iss", "https://kostenko.org");
+    claimMap.put("sub", "jwt-rbac");
+    claimMap.put("exp", currentTimeInSecs + 300)
+    claimMap.put("iat", currentTimeInSecs);
+    claimMap.put("auth_time", currentTimeInSecs);
+    claimMap.put("jti", UUID.randomUUID().toString());
+    claimMap.put("upn", "UPN");
+    claimMap.put("groups", Arrays.asList("user"));
+    claimMap.put("raw_token", UUID.randomUUID().toString());
+    claimMap.put("user_bane", userName);
+
+    return Jwt.claims(claimMap).jws().signatureKeyId("META-INF/private_key.pem").sign(readPrivateKey("META-INF/private_key.pem"));
+}
+```
+For additional information about JWT structure, please refer **[https://jwt.io](https://jwt.io/introduction/)**
+
+Time to review our application security stuff:
+`@RequestScoped` -  It is not about security as well. But as JWT is request scoped we need this one to work correctly;
+`@PermitAll` - Specifies that all security roles are allowed to invoke the specified method;
+`@RolesAllowed("user")` - Specifies the list of roles permitted to access method;
+`@Claim("user_name")` - Allows us inject provided by JWT field;
+
+To configure JWT in your `application.properties`, please add
+
+```bash
+quarkus.smallrye-jwt.enabled=true
+mp.jwt.verify.publickey.location=META-INF/public_key.pem
+mp.jwt.verify.issuer=https://kostenko.org
+
+# quarkus.log.console.enable=true
+# quarkus.log.category."io.quarkus.smallrye.jwt".level=TRACE
+# quarkus.log.category."io.undertow.request.security".level=TRACE
+```
+And actually that is it, - if you try to reach `/user/current` service without or with bad JWT token in the `Authorization` header - you will get  **HTTP 401 Unauthorized** error.
+
+curl example:
+```java
+curl -X GET "http://localhost:8080/user/current" -H "accept: application/json" -H "Authorization: Bearer eyJraWQiOiJNRVRBLUlORi9wcml2YXRlX2tleS5wZW0iLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJqd3QtcmJhYyIsInVwbiI6IlVQTiIsInJhd190b2tlbiI6IjQwOWY3MzVkLTQyMmItNDI2NC1iN2UyLTc1YTk0OGFjMTg3MyIsInVzZXJfbmFtZSI6InNlcmdpaSIsImF1dGhfdGltZSI6MTU4MjE5NzM5OSwiaXNzIjoiaHR0cHM6Ly9rb3N0ZW5rby5vcmciLCJncm91cHMiOlsidXNlciJdLCJleHAiOjkyMjMzNzIwMzY4NTQ3NzU4MDcsImlhdCI6MTU4MjE5NzM5OSwianRpIjoiMzNlMGMwZjItMmU0Yi00YTczLWJkNDItNDAzNWQ4NTYzODdlIn0.QteseKKwnYJWyj8ccbI1FuHBgWOk98PJuN0LU1vnYO69SYiuPF0d9VFbBada46N_kXIgzw7btIc4zvHKXVXL5Uh3IO2v1lnw0I_2Seov1hXnzvB89SAcFr61XCtE-w4hYWAOaWlkdTAmpMSUt9wHtjc0MwvI_qSBD3ol_VEoPv5l3_W2NJ2YBnqkY8w68c8txL1TnoJOMtJWB-Rpzy0XrtiO7HltFAz-Gm3spMlB3FEjnmj8-LvMmoZ3CKIybKO0U-bajWLPZ6JMJYtp3HdlpsiXNmv5QdIq1yY7uOPIKDNnPohWCgOhFVW-bVv9m-LErc_s45bIB9djwe13jFTbNg"
+```
+
+Source code of described sample application available on [GitHub](https://github.com/kostenkoserg/microprofile-quarkus-example)
