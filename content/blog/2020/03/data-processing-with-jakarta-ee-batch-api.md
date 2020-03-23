@@ -1,8 +1,8 @@
 title=Load huge amount of data with Jakarta EE Batch
-date=2020-02-10
+date=2020-03-23
 type=post
 tags=jakartaee, jberet, wildfly, batch, jsr532
-
+status=published
 ~~~~~~
 Processing huge amount of data is a challenge for every enterprise system. Jakarta EE specifications provides useful approach to get it done through **Jakarta Batch** (JSR-352):
 
@@ -10,9 +10,9 @@ Processing huge amount of data is a challenge for every enterprise system. Jakar
 Batch processing is typified by bulk-oriented, non-interactive, background execution. Frequently long-running, it may be data or computationally intensive, execute sequentially or in parallel, and may be initiated through various invocation models, including ad hoc, scheduled, and on-demand.
 Batch applications have common requirements, including logging, checkpointing, and parallelization. Batch workloads have common requirements, especially operational control, which allow for initiation of, and interaction with, batch instances; such interactions include stop and restart.
 
-One of the typical use case is a import data from different sources and formats to internal database. Below we will design sample application to import data from  `json` and `xml` files to the database and see how well structured it can be.
+One of the typical use case is a import data from different sources and formats to internal database. Below we will design sample application to import data, for example, from  `json` and `xml` files to the database and see how well structured it can be.
 
-So, using Eclipse Red Hat CodeReady Studio plugin, we can easily design our solution diagram:
+Using **Eclipse Red Hat CodeReady Studio plugin**, we can easily design our solution diagram:
 ![import batch diagram](/img/2020-02-jakarta-batch-import.png)
 
 Jakarta Batch descriptor in this case will looks like:
@@ -58,4 +58,11 @@ Jakarta Batch descriptor in this case will looks like:
     </step>
 </job>
 ```
-So, now all we need is implement each brick above and keep batchlets independent as much as possible.
+So, now we need to implement each brick above and try to keep each batchlet independent as much as possible. As you can see from above our job consist from:
+
+ * **fileSelector** - batchlet do file selection based on supported by configuration file extension
+ * **decider** - decision maker, responsible for choosing right parser
+ * **xml\jsonParser** - parser batchlets, responsible for file parsing to a list of items
+ * **chunkProcessor** - items processing chunk(reader, processor and writer) that supports partitioning
+
+ 
