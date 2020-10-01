@@ -1,0 +1,446 @@
+<<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>Sergii Kostenko's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/asciidoctor.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+    <!--link href="../css/prettify.css" rel="stylesheet"-->
+    <link href="../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../tags/logging.html">logging</a></li>
+										<li><a href="../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../tags/resin.html">resin</a></li>
+										<li><a href="../tags/performance.html">performance</a></li>
+										<li><a href="../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../tags/gradle.html">gradle</a></li>
+										<li><a href="../tags/ide.html">ide</a></li>
+										<li><a href="../tags/cdi.html">cdi</a></li>
+										<li><a href="../tags/batch.html">batch</a></li>
+										<li><a href="../tags/ci.html">ci</a></li>
+										<li><a href="../tags/openapi.html">openapi</a></li>
+										<li><a href="../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../tags/jberet.html">jberet</a></li>
+										<li><a href="../tags/github.html">github</a></li>
+										<li><a href="../tags/activemq.html">activemq</a></li>
+										<li><a href="../tags/jetty.html">jetty</a></li>
+										<li><a href="../tags/api.html">api</a></li>
+										<li><a href="../tags/jcache.html">jcache</a></li>
+										<li><a href="../tags/jpa.html">jpa</a></li>
+										<li><a href="../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../tags/json-b.html">json-b</a></li>
+										<li><a href="../tags/linux.html">linux</a></li>
+										<li><a href="../tags/jmx.html">jmx</a></li>
+										<li><a href="../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../tags/java.html">java</a></li>
+										<li><a href="../tags/security.html">security</a></li>
+										<li><a href="../tags/jms.html">jms</a></li>
+										<li><a href="../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../tags/sql.html">sql</a></li>
+										<li><a href="../tags/swagger.html">swagger</a></li>
+										<li><a href="../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../tags/jwt.html">jwt</a></li>
+										<li><a href="../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+				<a href="https://kostenko.org/blog/2019/05/wildfly-domain-mode-cluster-video.html"><h1>My video about Wildfly domain mode clustering</h1></a>
+				<p>02 May 2019</p>
+  			<p>
+Have published new YouTube video about Wildfly AS domain mode clustering
+
+<br/><br/>
+<div class="row">
+    <iframe align ="center" class="col-md-offset-3 col-lg-6 col-md-6 col-sm-12 col-xs-12" height="315" src="https://www.youtube.com/embed/dIT9e945OHs" frameborder="0" allowfullscreen="true"></iframe>
+</div>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/05/wildfly-domain-mode-cluster-video.html#disqus_thread" data-disqus-identifier="blog/2019/05/wildfly-domain-mode-cluster-video.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/04/java-spedup-random-generation.html"><h1>Improve performance of random number generation</h1></a>
+				<p>18 April 2019</p>
+  			<p><p>Directly or indirectly every developer uses random number generation during application development by different reasons:</p>
+<ul>
+<li>cryptography</li>
+<li>simulations</li>
+<li>game engines</li>
+<li>UUID generation</li>
+</ul>
+<p>and many more...</p>
+<p>In Java we have <strong>insecure</strong>: <code>java.util.Random</code> and <strong>secure</strong>: <code>java.security.SecureRandom</code> random generators. Main differences between is</p>
+<ul>
+<li><strong>Size</strong> - 48(Random) vs 128(SecureRandom) bits, so the chances of repeating for last one are smaller.</li>
+<li><strong>Seed Generation</strong> - Random uses the system clock and, so can be reproduced. SecureRandom takes random data from your OS (hardware)</li>
+<li><strong>Security</strong> - Consequently, the java.util.Random class must not be used either for security-critical applications or for protecting sensitive data.</li>
+</ul>
+<p>As result of above, for described reasons using of SecureRandom much preferable. You may never get performance issues with it until you need for number of random numbers which can be generated per time unit. Especially on cloud environment because of poor entropy.</p>
+<p>Simple ussage and speed comparison example:</p>
+<pre><code class="language-java">public class RandomGenerationTest {
+
+    private static int count = 100_000_000;
+
+    public static void main(String... s) throws Exception {
+        System.out.println(&quot;Start...&quot;);
+        doGeneration(new Random());
+        doGeneration(new SecureRandom());
+    }
+
+    private static void doGeneration(Random random) {
+        long time = System.currentTimeMillis();
+        for (int i = 0; i &lt; count; i++) {
+            random.nextInt();
+        }
+        time = System.currentTimeMillis() - time;
+        System.out.println(String.format(&quot;Generation of %s random numbers with %s time %s ms.&quot;, count, random.getClass().getName() ,time));
+    }
+}
+</code></pre>
+<pre><code class="language-java">Generation of 100000000 random numbers with java.util.Random time 930 ms.
+Generation of 100000000 random numbers with java.security.SecureRandom time 22036 ms.
+</code></pre>
+<p>By default SecureRandom will use random data from Linux kernel entropy pool <code>/dev/random</code>. So in case pool went empty -  next generation can be delayed for <strong>several minutes</strong>. You also can switch to the pseudo random number generator <code>/dev/urandom</code> which is can be must faster (non blocking) but little bit less secure.</p>
+<p>To make Java use <code>/dev/urandom</code> you need to change <code>securerandom.source</code> property in the file <code>jre/lib/security/java.security</code></p>
+<pre><code class="language-java">securerandom.source=file:/dev/urandom
+</code></pre>
+<p>The entropy gathering device can also be specified with the System property <code>java.security.egd</code>. For example:</p>
+<pre><code class="language-java">java -Djava.security.egd=file:/dev/urandom MainClass
+</code></pre>
+<p>To check how much random data is currently available in the entropy pool, use next command:</p>
+<pre><code class="language-java">cat /proc/sys/kernel/random/entropy_avail
+</code></pre>
+<p>Every number lower than 1.000 can be considered too low for normal operation; if you request more data than available the requesting process will block. To increase entropy of Linux environment you can use <strong>HA</strong>rdware <strong>V</strong>olatile <strong>E</strong>ntropy <strong>G</strong>athering and <strong>E</strong>xpansion with <code>haveged</code> open source implementation</p>
+<pre><code class="language-java">apt-get install haveged
+</code></pre>
+<p>It will use additional hardware(CPU) statistic to increase entropy and as result speedup your application.</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/04/java-spedup-random-generation.html#disqus_thread" data-disqus-identifier="blog/2019/04/java-spedup-random-generation.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html"><h1>Wildfly domain mode cluster and load balancing from the box</h1></a>
+				<p>15 April 2019</p>
+  			<p><p>Wildfly Application Server provide us two possible modes to setup cluster environment for the Java EE applications.</p>
+<ol>
+<li>
+<p><strong>Standalone mode</strong> - every standalone instance has its own management interface and configuration. You can manage one instance at a time. Configuration placed in <code>standalone.xml</code> file.</p>
+</li>
+<li>
+<p><strong>Domain mode</strong> - all Wildfly instances manage by special orchestration process called <code>domain controller</code>. Using domain controller you can manage group of servers. Also you can mange groups as well. Each servers group can has its own configuration, deployments etc. Configuration placed in <code>domain.xml</code> and <code>host.xml</code> files.<br />
+Example of a Wildfly server groups:<br />
+<img src="/img/2019-04-wildfly-cluster-domain-mode.png" alt="wildfly-cluster-domain-mode" /></p>
+</li>
+</ol>
+<p>From the version 10 Wildfly adds support for using the <code>Undertow</code> subsystem as a load balancer. So, now all we need to build Java EE clustered infrastructure is Wildfly only. Let's do it.</p>
+<p>Download latest version of application server from the <a href="https://wildfly.org/downloads/">https://wildfly.org/downloads/</a> and unzip distributive after. To run Wildfly in domain mode, please execute:</p>
+<pre><code class="language-java">kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./domain.sh
+</code></pre>
+<p>Connect to the Wildfly CLI concole</p>
+<pre><code class="language-java">kostenko@kostenko:/opt/wildfly-16.0.0.Final/bin$ ./jboss-cli.sh -c
+[domain@localhost:9990 /]
+</code></pre>
+<p>By default Wildfly has preconfigured server groups <code>main-server-group</code> and <code>other-server-group</code>, so we need cleanup existing servers:</p>
+<pre><code class="language-java">:stop-servers(blocking=true)
+/host=master/server-config=server-one:remove
+/host=master/server-config=server-two:remove
+/host=master/server-config=server-three:remove
+/server-group=main-server-group:remove
+/server-group=other-server-group:remove
+</code></pre>
+<p>Create new server group and servers, using the <code>full-ha</code> profile so <code>mod_cluster</code> support is included:</p>
+<pre><code class="language-java">/server-group=backend-servers:add(profile=full-ha, socket-binding-group=full-ha-sockets)
+/host=master/server-config=backend1:add(group=backend-servers, socket-binding-port-offset=100)
+/host=master/server-config=backend2:add(group=backend-servers, socket-binding-port-offset=200)
+
+#start the backend servers
+/server-group=backend-servers:start-servers(blocking=true)
+
+#add system properties (so we can tell them apart)
+/host=master/server-config=backend1/system-property=server.name:add(boot-time=false, value=backend1)
+/host=master/server-config=backend2/system-property=server.name:add(boot-time=false, value=backend2)
+</code></pre>
+<p>Then  set up the server group for load balancer</p>
+<pre><code class="language-java">/server-group=load-balancer:add(profile=load-balancer, socket-binding-group=load-balancer-sockets)
+/host=master/server-config=load-balancer:add(group=load-balancer)
+/socket-binding-group=load-balancer-sockets/socket-binding=modcluster:write-attribute(name=interface, value=public)
+/server-group=load-balancer:start-servers
+</code></pre>
+<p>Now let's develop simple JAX-RS endpoint to show how it works:</p>
+<pre><code class="language-java">@Path(&quot;/clusterdemo&quot;)
+@Stateless
+public class ClusterDemoEndpoint {
+
+    @GET
+    @Path(&quot;/serverinfo&quot;)
+    public Response getServerInfo() {
+
+        return Response.ok().entity(&quot;Server: &quot; + System.getProperty(&quot;server.name&quot;)).build();
+    }
+}
+</code></pre>
+<p>Build project and deploy it to the <code>backend-servers</code> group:</p>
+<pre><code class="language-java">[domain@localhost:9990 /] deploy ee-jax-rs-examples.war --server-groups=backend-servers
+</code></pre>
+<p>And check the result by <code>http://localhost:8080/ee-jax-rs-examples/clusterdemo/serverinfo</code> :<br />
+<img src="/img/2019-04-wildfly-cluster-domain-mode-1-2.gif" alt="wildfly-cluster-domain-mode-1-2" /></p>
+<p>Now we can easily add  servers to the group at runtime and requests will balancing automatically:</p>
+<pre><code class="language-java">[domain@localhost:9990 /] /host=master/server-config=backend3:add(group=backend-servers, socket-binding-port-offset=300)
+[domain@localhost:9990 /] /host=master/server-config=backend3/system-property=server.name:add(boot-time=false, value=backend3)
+[domain@localhost:9990 /] /server-group=backend-servers/:start-servers(blocking=true)
+</code></pre>
+<p><img src="/img/2019-04-wildfly-cluster-domain-mode-1-2-3.gif" alt="wildfly-cluster-domain-mode-1-2-3" /></p>
+<p>That is it!<br />
+Source code available on GitHub:  <a href="https://github.com/kostenkoserg/ee-jax-rs-examples/blob/master/src/main/java/org/kostenko/example/jaxrs/ClusterDemoEndpoint.java">Demo application</a>,  <a href="https://github.com/kostenkoserg/wildfly-configuration-examples/blob/master/wildfly-domain-mode-cluster.cli">Wildlfly CLI </a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html#disqus_thread" data-disqus-identifier="blog/2019/04/wildfly-cluster-domain-mode.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/04/jbake-blog-pagination.html"><h1>JBake blog pagination</h1></a>
+				<p>10 April 2019</p>
+  			<p><p>To enable pagintation support on your JBake based blog you need to provide next properties in your <code>jbake.properties</code> file:</p>
+<pre><code class="language-java">index.paginate=true
+index.posts_per_page=5
+</code></pre>
+<p>After that JBake will generate subdirectories <code>2,3,4...</code> for your <code>index.html</code>. Next, you need to update <code>index</code> template to generate necessary count of posts per each index page and provide &quot;previous&quot;,&quot;next&quot; navigation buttons.</p>
+<p>Below, I will show you freemarker template with pagination support, that I am using for this blog</p>
+<pre><code class="language-java">&lt;#include &quot;header.ftl&quot;&gt;
+	&lt;#include &quot;menu.ftl&quot;&gt;
+	&lt;#list posts as post&gt;
+  		&lt;#if (post.status == &quot;published&quot;  &amp;&amp; post?index &gt;= (currentPageNumber-1) * config.index_posts_per_page?eval &amp;&amp; post?index &lt; currentPageNumber * config.index_posts_per_page?eval)&gt;
+				&lt;a href=&quot;${post.uri}&quot;&gt;&lt;h1&gt;&lt;#escape x as x?xml&gt;${post.title}&lt;/#escape&gt;&lt;/h1&gt;&lt;/a&gt;
+				&lt;p&gt;${post.date?string(&quot;dd MMMM yyyy&quot;)}&lt;/p&gt;
+  			&lt;p&gt;${post.body}&lt;/p&gt;
+				&lt;hr/&gt;
+  		&lt;/#if&gt;
+  	&lt;/#list&gt;
+		&lt;ul class=&quot;pager&quot;&gt;
+			&lt;#if (currentPageNumber &gt; 1)&gt;&lt;li class=&quot;previous&quot;&gt;&lt;a href=&quot;${config.site_host}/${(currentPageNumber==2)?then('', currentPageNumber-1)}&quot;&gt;Previous&lt;/a&gt;&lt;/li&gt;&lt;/#if&gt;
+			&lt;li&gt;Page: ${currentPageNumber}/${numberOfPages} (&lt;a href=&quot;${content.rootpath}${config.archive_file}&quot;&gt;archive&lt;/a&gt;)&lt;/li&gt;
+			&lt;#if (currentPageNumber &lt; numberOfPages)&gt;&lt;li class=&quot;next&quot;&gt;&lt;a href=&quot;${config.site_host}/${currentPageNumber + 1}&quot;&gt;Next&lt;/a&gt;&lt;/li&gt;&lt;/#if&gt;
+		&lt;/ul&gt;
+&lt;#include &quot;footer.ftl&quot;&gt;
+</code></pre>
+<p>Blog sources available on <a href="https://github.com/kostenkoserg/kostenko.blog.src">GitHub</a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/04/jbake-blog-pagination.html#disqus_thread" data-disqus-identifier="blog/2019/04/jbake-blog-pagination.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/04/java-ee-cdi-events.html"><h1>Java EE CDI events. Dynamic qualifier.</h1></a>
+				<p>08 April 2019</p>
+  			<p><p>Java EE provides us really nice mechanism for event processing. Which is part of the CDI for Java specification. Dynamic qualifier for CDI Events can be very useful, for example, in domain driven design, web socket messages routing or any other stuff depends on needs.</p>
+<p>Firing simple event looks like:</p>
+<pre><code class="language-java">@Named
+public class MyEventSource {
+
+    @Inject
+    private Event&lt;String&gt; myEvent;
+
+    public void fireEvent(){
+        myEvent.fire(&quot;Hello World!&quot;);
+    }
+}
+</code></pre>
+<p>then event observer like:</p>
+<pre><code class="language-java">@Named
+public class MyEventObserver {
+    public void observeEvent(@Observes String message){
+        System.out.println(message);
+    }
+}
+</code></pre>
+<p>With CDI Qualifier (fancy annotation) you can specify which observer should serve the event</p>
+<pre><code class="language-java">@Qualifier
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, PARAMETER, TYPE})
+public @interface Important {
+}
+</code></pre>
+<p>For  example:</p>
+<pre><code class="language-java">@Named
+public class MyEventSource {
+
+    @Inject
+    @Important
+    private Event&lt;String&gt; myEvent;
+    ...
+</code></pre>
+<pre><code class="language-java">@Named
+public class MyEventObserver {
+  public void observeEvent(@Observes @Important String message){
+    ...
+</code></pre>
+<p>By default event will be fired in current transaction, but you can change this behavior with <code>@Observes</code> attribute  <code>during</code></p>
+<pre><code class="language-java">@Named
+public class TransactionEventObserver {
+    public void observeImportantMessage(@Observes(during = TransactionPhase.AFTER_SUCCESS) String message){
+        System.out.println(message);
+    }
+}
+</code></pre>
+<p>Available next values:</p>
+<ul>
+<li>IN_PROGRESS</li>
+<li>BEFORE_COMPLETION</li>
+<li>AFTER_COMPLETION</li>
+<li>AFTER_FAILURE</li>
+<li>AFTER_SUCCESS</li>
+</ul>
+<p>Now, let's take a look on dynamically qualification of CDI event. In the example below we will create observer to serve user events like login, logout, registration etc from the abstract event source. As was noticed earlier, event can be fired from different sources depends on your needs.</p>
+<p>So, first we need to create <code>Qualifier</code> with available events values</p>
+<pre><code class="language-java">@Qualifier
+@Target({METHOD, FIELD, PARAMETER, TYPE})
+@Retention(RUNTIME)
+public @interface UserEvent {
+
+    Routes value();
+}
+</code></pre>
+<p>where Routes is enum with available values, for example:</p>
+<pre><code class="language-java">public enum Routes {
+  LOGIN,
+  LOGOUT,
+  REGISTRATION
+}
+</code></pre>
+<p>Then we need to create child class of <code>javax.enterprise.util.AnnotationLiteral</code> to possibility of inline instantiation of annotation type instance.</p>
+<pre><code class="language-java">public class UserEventBinding extends AnnotationLiteral&lt;UserEvent&gt; implements UserEvent {
+
+    Routes routes;
+
+    public UserEventBinding(Routes routes) {
+        this.routes = routes;
+    }
+
+    @Override
+    public Routes value() {
+        return routes;
+    }
+}
+</code></pre>
+<p>Now, let's fire event with dynamically observer selection</p>
+<pre><code class="language-java">@Named
+public class UserEventSource {
+
+    @Inject
+    private Event&lt;String&gt; userEvent;
+
+    public void fireEvent(Routes route){
+        userEvent.select(new UserEventBinding(route)).fire(&quot;Instead of string you can use your object&quot;);
+    }
+}
+</code></pre>
+<p>So, time to show how our Observer looks like</p>
+<pre><code class="language-java">import static Routes.*;
+...
+
+@Named
+public class UserObserver {
+
+    public void registration(@Observes @UserEvent(REGISTRATION) String eventData) {
+      ....
+    }
+
+    public void login(@Observes @UserEvent(LOGIN) String eventData) {
+      ....
+    }
+
+    public void logout(@Observes @UserEvent(LOGOUT) String eventData) {
+      ....
+    }
+}
+</code></pre>
+<p>P.S. From Java EE 8 with CDI 2.0 you can use <strong>asynchronous CDI Events</strong> whith <code>fireAsync</code> method and  <code>@ObservesAsync</code> annotation...</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/04/java-ee-cdi-events.html#disqus_thread" data-disqus-identifier="blog/2019/04/java-ee-cdi-events.html">Comments</a></p>
+				<hr/>
+
+		<ul class="pager">
+				<li class="previous"><a href="https://kostenko.org/7">Previous</a></li>
+			<li">Page: 8/10 (<a href="../archive.html">archive</a>)</li>
+				<li class="next"><a href="https://kostenko.org/9">Next</a></li>
+		</ul>
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <!--script src="../js/prettify.js"></script-->
+		<script src="../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

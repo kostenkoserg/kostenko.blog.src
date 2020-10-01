@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>JMS Duplicate Message Detection with Wildfly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <!--link href="../../../css/prettify.css" rel="stylesheet"-->
+    <link href="../../../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../../../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../../../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../../../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../../../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../../../tags/logging.html">logging</a></li>
+										<li><a href="../../../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../../../tags/resin.html">resin</a></li>
+										<li><a href="../../../tags/performance.html">performance</a></li>
+										<li><a href="../../../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../../../tags/gradle.html">gradle</a></li>
+										<li><a href="../../../tags/ide.html">ide</a></li>
+										<li><a href="../../../tags/cdi.html">cdi</a></li>
+										<li><a href="../../../tags/batch.html">batch</a></li>
+										<li><a href="../../../tags/ci.html">ci</a></li>
+										<li><a href="../../../tags/openapi.html">openapi</a></li>
+										<li><a href="../../../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../../../tags/jberet.html">jberet</a></li>
+										<li><a href="../../../tags/github.html">github</a></li>
+										<li><a href="../../../tags/activemq.html">activemq</a></li>
+										<li><a href="../../../tags/jetty.html">jetty</a></li>
+										<li><a href="../../../tags/api.html">api</a></li>
+										<li><a href="../../../tags/jcache.html">jcache</a></li>
+										<li><a href="../../../tags/jpa.html">jpa</a></li>
+										<li><a href="../../../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../../../tags/json-b.html">json-b</a></li>
+										<li><a href="../../../tags/linux.html">linux</a></li>
+										<li><a href="../../../tags/jmx.html">jmx</a></li>
+										<li><a href="../../../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../../../tags/java.html">java</a></li>
+										<li><a href="../../../tags/security.html">security</a></li>
+										<li><a href="../../../tags/jms.html">jms</a></li>
+										<li><a href="../../../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../../../tags/sql.html">sql</a></li>
+										<li><a href="../../../tags/swagger.html">swagger</a></li>
+										<li><a href="../../../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../../../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../../../tags/jwt.html">jwt</a></li>
+										<li><a href="../../../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../../../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../../../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../../../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../../../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../../../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+	<div class="page-header">
+		<h1>JMS Duplicate Message Detection with Wildfly</h1>
+	</div>
+
+	<p><em>19 July 2019</em></p>
+
+	<p><p>To support JMS specification Wildfly uses Apache ActiveMQ Artemis over active-mq subsystem. Last one provides mechanism to filtering out duplicate messages without application code changes.</p>
+<p>To enable duplicate message detection you just need to set a special property on the message to a unique value</p>
+<pre><code class="language-java">message.setStringProperty(&quot;_AMQ_DUPL_ID&quot;, uniqueId);
+</code></pre>
+<p>So, lets see how it works on practice and create simple Message Driven Bean to consume messages:</p>
+<pre><code class="language-java">@JMSDestinationDefinition(
+        name = DuplicateJMSTestBean.DUPLICATE_QUEUE,
+        interfaceName = &quot;javax.jms.Queue&quot;
+)
+@MessageDriven(activationConfig = {
+    @ActivationConfigProperty(propertyName = &quot;destinationLookup&quot;, propertyValue = DuplicateJMSTestBean.DUPLICATE_QUEUE),
+    @ActivationConfigProperty(propertyName = &quot;destinationType&quot;, propertyValue = &quot;javax.jms.Queue&quot;)
+})
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class DuplicateJMSTestBean implements MessageListener {
+
+    public final static String DUPLICATE_QUEUE = &quot;java:global/jms/duplicateTestQueue&quot;;
+
+    @Override
+    public void onMessage(Message msg) {
+        System.out.println(&quot;Got new message.&quot;);
+        MessageStorage.messages.add(msg);
+        try {
+            Thread.sleep(5_000l);
+        } catch(Exception ignore) {}
+        System.out.println(&quot;Message  successfully processed&quot;);
+    }
+}
+</code></pre>
+<p>And simple JAX-RS endpoint to produce messages</p>
+<pre><code class="language-java">@Path(&quot;/&quot;)
+@Stateless
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class DuplicateTestEndpoint {
+
+    @Inject
+    private JMSContext context;
+    @Resource(lookup = DuplicateJMSTestBean.DUPLICATE_QUEUE)
+    private Queue queue;
+
+    @GET
+    @Path(&quot;/sendmessage&quot;)
+    public Response sendMessage(@QueryParam(&quot;duplicate-id&quot;) String duplicateId) {
+        try {
+            ObjectMessage message = context.createObjectMessage();
+            if (duplicateId == null) {
+                context.createProducer().send(queue, message);
+            } else {
+                message.setStringProperty(&quot;_AMQ_DUPL_ID&quot;, duplicateId);
+                context.createProducer().send(queue, message);
+            }
+            return Response.ok().entity(&quot;Message was sent.  Recieved &quot; + MessageStorage.messages.size() + &quot; messagges: &quot; + MessageStorage.messages).build();
+        } catch (Throwable e) {
+            return Response.ok().entity(&quot;Error: &quot; + e).build();
+        }
+    }
+}
+</code></pre>
+<p>Now in case we send message with the same <code>_AMQ_DUPL_ID</code> without transaction by <code>http://127.0.0.1:8080/jms-examples/sendmessage?duplicate-id=myuniqueid</code> we will get in logs:</p>
+<pre><code class="language-java">WARN [org.apache.activemq.artemis.core.server] (Thread-448 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$5@e47887a)) AMQ222059: Duplicate message detected - message will not be routed. Message information:
+CoreMessage[messageID=1505,durable=true,userID=3d27afde-a9fa-11e9-af5d-0242e352ec80,priority=4, timestamp=Fri Jul 19 10:53:04 EEST 2019,expiration=0, durable=true, address=jms.queue.jms-examples_jms-examples_jms-examples_java:global/jms/duplicateTestQueue,size=416,properties=TypedProperties[__AMQ_CID=38587489-a9fa-11e9-af5d-0242e352ec80,_AMQ_DUPL_ID=myuniqueid,_AMQ_ROUTING_TYPE=1]]@145077408
+</code></pre>
+<p>and message will NOT consume by consumer. In case you send message in transaction - you will get <code>Exception</code> on commit.</p>
+<p>Keep in mind, that to store IDs activemq uses circular fixed size cache</p>
+<pre><code class="language-java">/subsystem=messaging-activemq/server=default:read-attribute(name=id-cache-size)
+{
+    &quot;outcome&quot; =&gt; &quot;success&quot;,
+    &quot;result&quot; =&gt; 20000
+}
+</code></pre>
+<p>so, this value should be big enough to avoid rewriting. Also, you can configure persist cache or not (by default: <code>true</code>)</p>
+<pre><code class="language-java">/subsystem=messaging-activemq/server=default:write-attribute(name=persist-id-cache,value=false)
+</code></pre>
+<p>Source code available on <a href="https://github.com/kostenkoserg/ee-jms-examples">GitHub</a></p>
+</p>
+
+	<hr />
+	<div class="row">
+	<div class="box">
+
+	<div id="disqus_thread"></div>
+	<script>
+
+	var disqus_config = function () {
+	this.page.url = 'https://kostenko.org/blog/2019/07/wildfly-jms-duplicate-detection.html';
+	this.page.identifier = 'blog/2019/07/wildfly-jms-duplicate-detection.html';
+	};
+
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = 'https://kostenko-org.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+	})();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div>
+</div>
+
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <!--script src="../../../js/prettify.js"></script-->
+		<script src="../../../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

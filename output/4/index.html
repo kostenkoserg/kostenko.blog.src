@@ -1,0 +1,342 @@
+<<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>Sergii Kostenko's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/asciidoctor.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+    <!--link href="../css/prettify.css" rel="stylesheet"-->
+    <link href="../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../tags/logging.html">logging</a></li>
+										<li><a href="../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../tags/resin.html">resin</a></li>
+										<li><a href="../tags/performance.html">performance</a></li>
+										<li><a href="../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../tags/gradle.html">gradle</a></li>
+										<li><a href="../tags/ide.html">ide</a></li>
+										<li><a href="../tags/cdi.html">cdi</a></li>
+										<li><a href="../tags/batch.html">batch</a></li>
+										<li><a href="../tags/ci.html">ci</a></li>
+										<li><a href="../tags/openapi.html">openapi</a></li>
+										<li><a href="../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../tags/jberet.html">jberet</a></li>
+										<li><a href="../tags/github.html">github</a></li>
+										<li><a href="../tags/activemq.html">activemq</a></li>
+										<li><a href="../tags/jetty.html">jetty</a></li>
+										<li><a href="../tags/api.html">api</a></li>
+										<li><a href="../tags/jcache.html">jcache</a></li>
+										<li><a href="../tags/jpa.html">jpa</a></li>
+										<li><a href="../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../tags/json-b.html">json-b</a></li>
+										<li><a href="../tags/linux.html">linux</a></li>
+										<li><a href="../tags/jmx.html">jmx</a></li>
+										<li><a href="../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../tags/java.html">java</a></li>
+										<li><a href="../tags/security.html">security</a></li>
+										<li><a href="../tags/jms.html">jms</a></li>
+										<li><a href="../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../tags/sql.html">sql</a></li>
+										<li><a href="../tags/swagger.html">swagger</a></li>
+										<li><a href="../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../tags/jwt.html">jwt</a></li>
+										<li><a href="../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+				<a href="https://kostenko.org/blog/2019/12/jakarta-ee-asvs-security.html"><h1>Why Jakarta EE beats other java solutions from security point of view</h1></a>
+				<p>27 December 2019</p>
+  			<p><p>No one care about security until security incident. In case enterprise development last one can costs too much, so any preventive steps can help.  Significant part part of the OWASP Application Security Verification Standard (<strong>ASVS</strong>) reads:</p>
+<blockquote>
+<p><strong>10.2.1</strong> Verify that the application source code and third party libraries do not contain unauthorized phone home or data collection capabilities. Where such functionality exists, obtain the user's permission for it to operate before collecting any data.<br />
+<strong>10.2.3</strong> Verify that the application source code and third party libraries do not contain back doors, such as hard-coded or additional undocumented accounts or keys, code obfuscation, undocumented binary blobs, rootkits, or anti-debugging, insecure debugging features, or otherwise out of date, insecure, or hidden functionality that could be used maliciously if discovered.<br />
+<strong>10.2.4</strong> Verify that the application source code and third party libraries does not contain time bombs by searching for date and time related functions.<br />
+<strong>10.2.5</strong> Verify that the application source code and third party libraries does not contain malicious code, such as salami attacks, logic bypasses, or logic bombs.<br />
+<strong>10.2.6</strong> Verify that the application source code and third party libraries do not contain Easter eggs or any other potentially unwanted functionality.<br />
+<strong>10.3.2</strong> Verify that the application employs integrity protections, such as code signing or sub-resource integrity. The application must not load or execute code from untrusted sources, such as loading includes, modules, plugins, code, or libraries from untrusted sources or the Internet.<br />
+<strong>14.2.4</strong> Verify that third party components come from pre-defined, trusted and continually maintained repositories.</p>
+</blockquote>
+<p>In other words that meaning you should: <strong>&quot;Verify all code including third-party binaries, libraries, frameworks are reviewed for hardcoded credentials (backdoors).&quot;</strong></p>
+<p>In case development according to Jakarta EE specification you shouldn't be able to use poor controlled  third party libraries, as all you need already came with Application Server. In turn, last one is responsible for in time security  updates, ussage of verified libraries and many more...</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/12/jakarta-ee-asvs-security.html#disqus_thread" data-disqus-identifier="blog/2019/12/jakarta-ee-asvs-security.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/12/setup-darcula-laf-netbeans-11.html"><h1>How to setup Darcula LAF on Netbeans 11</h1></a>
+				<p>26 December 2019</p>
+  			<p><p>It is pity, but Apache Netbeans IDE still comes without support default <strong>dark</strong> mode. Enabling <code>Netbeans 8.2 Plugin portal</code> does not have any effect, so to use plugins from previous versions we need to add <code>New Provider</code> (Tools-&gt;Plugins) with next URL:</p>
+<pre><code class="language-java">http://plugins.netbeans.org/nbpluginportal/updates/8.2/catalog.xml.gz
+</code></pre>
+<p><img src="/img/2019-12-new-provider.png" alt="add provider" /></p>
+<p>After that you should be able setup Darcula LAF in standard way</p>
+<p><img src="/img/2019-12-select-laf.png" alt="add provider" /></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/12/setup-darcula-laf-netbeans-11.html#disqus_thread" data-disqus-identifier="blog/2019/12/setup-darcula-laf-netbeans-11.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/11/jakartaee-understanding-jms-transactions.html"><h1>Understanding JMS(MDB) transaction scopes in JakartaEE application</h1></a>
+				<p>14 November 2019</p>
+  			<p><p>Most useful way to deal with JMS in JakartaEE application is MDB(<strong>M</strong>essage <strong>D</strong>riven <strong>B</strong>eans). This type of bean acts as a JMS message listener to which messages can be delivered from either a queue or a topic.</p>
+<p>Message Driven Bean supports only <code>Required</code> and <code>NotSupported</code> scopes as there is no incoming transaction context.</p>
+<ul>
+<li>
+<p><strong>@Required:</strong> Transaction starts before read from queue (before onMessage). All next resource calls will use this transaction context. In case transaction rollback or some RuntimeException, - message will be roll back to destination. Container acknowledges delivery after TX commit;</p>
+</li>
+<li>
+<p><strong>@NotSupported:</strong> No transaction started. Application server acknowledges delivery on successful onMessage(). In case RuntimeException, - message will be returned to destination;</p>
+</li>
+</ul>
+<p>In both cases above, when message was returned to the destination, container will do redelivery according to application server configuration. For example on Wildfly it is: <code>max-delivery-attempts</code> and <code>redelivery-delay</code>.</p>
+<pre><code class="language-java">/subsystem=messaging-activemq/server=default/address-setting=#:read-attribute(name=max-delivery-attempts)
+</code></pre>
+<p>Be careful with redelivery configuration as in case <strong>&quot;poisen message&quot;</strong> it can negative affect performance of your application or even server.</p>
+<p>When you use container-managed transactions, you can invoke next <code>MessageDrivenContext</code> methods:</p>
+<ul>
+<li>setRollbackOnly: marks the current transaction to rollback.</li>
+<li>getRollbackOnly: check current transaction has been marked for rollback or not.</li>
+</ul>
+<p>In case bean-managed transactions you need to manually control transaction by <code>UserTransaction</code> methods and you also can set the activation configuration property acknowledgeMode to <code>Auto-acknowledge</code> or <code>Dups-ok-acknowledge</code> to specify how the message received by the message-driven bean to be acknowledged.</p>
+<p>Ok. Let's pay attention on typical use cases and potentially issues with default configurations. Often enough developers use MDB to do relatively long tasks that should be executed asynchronously. So typical message bean in this case will looks like:</p>
+<pre><code class="language-java">@JMSDestinationDefinition(
+        name = TxRequiredMessagerDrivenBean.TX_REQUIRED_QUEUE,
+        interfaceName = &quot;javax.jms.Queue&quot;
+)
+@MessageDriven(activationConfig = {
+    @ActivationConfigProperty(propertyName = &quot;destinationLookup&quot;, propertyValue = TxRequiredMessagerDrivenBean.TX_REQUIRED_QUEUE),
+    @ActivationConfigProperty(propertyName = &quot;destinationType&quot;, propertyValue = &quot;javax.jms.Queue&quot;)
+})
+//@TransactionAttribute(TransactionAttributeType.REQUIRED)
+public class TxRequiredMessagerDrivenBean implements MessageListener {
+
+    public final static String TX_REQUIRED_QUEUE = &quot;java:global/jms/txRequiredQueue&quot;;
+
+    @Resource
+    MessageDrivenContext messageDrivenContext;
+
+    @Override
+    public void onMessage(Message msg) {
+        System.out.println(&quot;Got new message.&quot;);
+        try {
+            System.out.println(&quot;Hello TxRequiredMessagerDrivenBean!&quot;);
+            for (int x = 1; x &lt; 40; x++) {
+                Thread.sleep(10_000l);
+                System.out.println(&quot;Long transaction: &quot; + (10 * x) + &quot; sec.&quot;);
+            }
+        } catch (Exception ex) {
+            System.err.println(ex);
+            messageDrivenContext.setRollbackOnly();
+        }
+        System.out.println(&quot;Message  successfully processed&quot;);
+    }
+}
+</code></pre>
+<p>Now take a look to result of our bean invocation:</p>
+<pre><code class="language-java">INFO  (Thread-1 (ActiveMQ-client-global-threads)) Got new message.
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Hello TxRequiredMessagerDrivenBean!
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 10 sec.
+...
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 290 sec.
+...
+WARN  [com.arjuna.ats.arjuna] (Transaction Reaper) ARJUNA012117: TransactionReaper::check timeout for TX 0:ffff7f000101:3b3ecbca:5dcc2894:13 in state  RUN
+WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012095: Abort of action id 0:ffff7f000101:3b3ecbca:5dcc2894:13 invoked while multiple threads active within it.
+WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012381: Action id 0:ffff7f000101:3b3ecbca:5dcc2894:13 completed with multiple threads - thread Thread-1 (ActiveMQ-client-global-threads) was in progress with java.lang.Thread.sleep(Native Method) org.kostenko.example.jms.transaction.TxRequiredMessagerDrivenBean.onMessage(TxRequiredMessagerDrivenBean.java:40)
+...
+WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012108: CheckedAction::check - atomic action 0:ffff7f000101:3b3ecbca:5dcc2894:13 aborting with 1 threads active!
+...
+WARN  [com.arjuna.ats.arjuna] (Transaction Reaper Worker 0) ARJUNA012121: TransactionReaper::doCancellations worker Thread[Transaction Reaper Worker 0,5,main] successfully canceled TX 0:ffff7f000101:3b3ecbca:5dcc2894:13
+...
+INFO  (Thread-3 (ActiveMQ-client-global-threads)) Got new message.
+INFO  (Thread-3 (ActiveMQ-client-global-threads)) Hello TxRequiredMessagerDrivenBean!
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 300 sec.
+INFO  (Thread-3 (ActiveMQ-client-global-threads)) Long transaction: 10 sec.
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 310 sec.
+INFO  (Thread-3 (ActiveMQ-client-global-threads)) Long transaction: 20 sec.
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) Long transaction: 320 sec.
+...
+INFO  (Thread-3 (ActiveMQ-client-global-threads)) [] Long transaction: 90 sec.
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) [] Long transaction: 390 sec.
+INFO  (Thread-1 (ActiveMQ-client-global-threads)) [] Message  successfully processed
+WARN  [com.arjuna.ats.arjuna] (Thread-1 (ActiveMQ-client-global-threads)) [] ARJUNA012077: Abort called on already aborted atomic action 0:ffff7f000101:3b3ecbca:5dcc2894:13
+WARN  [org.apache.activemq.artemis.ra] (Thread-1 (ActiveMQ-client-global-threads)) [] AMQ152006: Unable to call after delivery: javax.resource.spi.LocalTransactionException: javax.transaction.RollbackException: ARJUNA016102: The transaction is not active! Uid is 0:ffff7f000101:3b3ecbca:5dcc2894:13
+  Caused by: javax.transaction.RollbackException: ARJUNA016102: The transaction is not active! Uid is 0:ffff7f000101:3b3ecbca:5dcc2894:13
+...
+WARN  [org.apache.activemq.artemis.core.client] (Thread-1 (ActiveMQ-client-global-threads)) [] AMQ212009: resetting session after failure
+</code></pre>
+<p>From log above we can see that:</p>
+<ul>
+<li><code>TransactionAttributeType.REQUIRED</code> was used by default;</li>
+<li>Started transaction was canceled by default timeout in <code>300 sec</code>;</li>
+<li>Container detected TX cancellation - did message redelivery and MDB starts new transaction;</li>
+<li>Old thread continue work with first message processing, but the transaction already is not active;</li>
+</ul>
+<p>So, keep this behavior in mind if you planning to play with long tasks and Message Driven Beans then depends on requirements few <strong>solutions</strong> is possible here:</p>
+<ul>
+<li>Avoid long transaction usage. If long TX is not necessary - always use <code>TransactionAttributeType.NOT_SUPPORTED</code></li>
+<li>Increase default transaction timeout</li>
+<li>Use an annotation @ActivationConfigProperty(propertyName=&quot;transactionTimeout&quot;, propertyValue=&quot;xxx&quot;) to specify custom transaction timeout for MDB like:</li>
+</ul>
+<pre><code class="language-java">@MessageDriven(activationConfig = {
+    @ActivationConfigProperty(propertyName = &quot;destinationLookup&quot;, propertyValue = TxRequiredMessagerDrivenBean.TX_REQUIRED_QUEUE),
+    @ActivationConfigProperty(propertyName = &quot;destinationType&quot;, propertyValue = &quot;javax.jms.Queue&quot;)
+    @ActivationConfigProperty(propertyName = &quot;transactionTimeout&quot;, propertyValue=&quot;500&quot;)
+})
+</code></pre>
+<p>Source code of test application available on <a href="https://github.com/kostenkoserg/ee-jms-examples">GitHub</a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/11/jakartaee-understanding-jms-transactions.html#disqus_thread" data-disqus-identifier="blog/2019/11/jakartaee-understanding-jms-transactions.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/11/java-primitive-types-calculation.html"><h1>Never use Java primitives for math calculation</h1></a>
+				<p>08 November 2019</p>
+  			<p><p>This is well known stuff about representation of <a href="https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html">Floating point types in java</a>, but time from time each developer can forget about</p>
+<pre><code class="language-java">@Test
+public void primitiveTest() {
+
+    // right way:
+    BigDecimal bgDcml = BigDecimal.valueOf(100000f).multiply(BigDecimal.valueOf(750f)).multiply(BigDecimal.valueOf(15f)).setScale(0);
+    BigDecimal bgDcml2 = BigDecimal.valueOf(0.04d).multiply(BigDecimal.valueOf(15.0d));
+
+    // wrong way:
+    float flt = 100000f * 750f * 15f;
+    float flt2 = 0.04f * 15.0f;
+
+    System.out.println(&quot;BigDecimal (correct): &quot; + bgDcml);
+    System.out.println(String.format(&quot;Float (incorrect): %s (%s)&quot;, flt, new BigDecimal(flt)));
+    System.out.println(&quot;BigDecimal (correct): &quot; + bgDcml2);
+    System.out.println(String.format(&quot;Float (incorrect): %s&quot;, flt2));
+}
+</code></pre>
+<pre><code class="language-java">-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+BigDecimal (correct): 1125000000
+Float (incorrect): 1.12499994E9 (1124999936)
+BigDecimal (correct): 0.600
+Float (incorrect): 0.59999996
+</code></pre>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/11/java-primitive-types-calculation.html#disqus_thread" data-disqus-identifier="blog/2019/11/java-primitive-types-calculation.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/11/jakarta-batch-garbage-collection-jberet.html"><h1>Jakarta Batch garbage collection with Jberet</h1></a>
+				<p>04 November 2019</p>
+  			<p><p>To implement Jakarta Batch Specification Wildfly uses JBeret as implementation of JSR 352 (Batch Applications for the Java Platform). During processing, last one persists some working data to the memory, JDBC or another repository depends on configuration.</p>
+<p>In case intensive usage it can collect lot of data and as result provoke some application server performance issues. To cleanup  <strong>unwanted job data</strong> you can design your own solution or use provided by Jberet <a href="https://docs.jboss.org/jberet/1.3.0.Final/javadoc/jberet-core/org/jberet/repository/PurgeBatchlet.html">org.jberet.repository.PurgeBatchlet</a> in standard way:</p>
+<pre><code class="language-java">&lt;job id=&quot;batchGarbageCollector&quot; xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;
+     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+     xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/jobXML_1_0.xsd&quot;
+     version=&quot;1.0&quot;&gt;
+    &lt;step id=&quot;batchGarbageCollector.step1&quot;&gt;
+        &lt;batchlet ref=&quot;org.jberet.repository.PurgeBatchlet&quot;&gt;
+            &lt;properties&gt;
+                &lt;property name=&quot;sqlFile&quot; value=&quot;#{jobParameters['sqlFile']}&quot;/&gt;
+            &lt;/properties&gt;
+        &lt;/batchlet&gt;
+    &lt;/step&gt;
+&lt;/job&gt;
+</code></pre>
+<p>From the documentation <code>PurgeBatchlet</code> supports rich set of properties and looks pretty good, <strong>BUT</strong> on practice lot of them does not work as expected. I tried <code>numberOfRecentJobExecutionsToKeep</code> and <code>batchStatuses</code> on both WF repositories (inMemory and JDBC) and on both of them <strong>it does not work</strong> for me.</p>
+<p>I am getting output like below, but garbage still was with me :(</p>
+<pre><code class="language-java">...
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256804
+INFO  [org.jberet] (Batch Thread - 8) [] JBERET000023: Removing javax.batch.runtime.JobExecution 35256806
+...
+</code></pre>
+<p>Good news is, that in case using JDBC repository job parameter <code>sqlFile</code> works as expected and PurgeBatchlet executes provided SQL... without any log outputs.</p>
+<p>Source code of test application available on <a href="https://github.com/kostenkoserg/ee-batch-processing-examples">GitHub</a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/11/jakarta-batch-garbage-collection-jberet.html#disqus_thread" data-disqus-identifier="blog/2019/11/jakarta-batch-garbage-collection-jberet.html">Comments</a></p>
+				<hr/>
+
+		<ul class="pager">
+				<li class="previous"><a href="https://kostenko.org/3">Previous</a></li>
+			<li">Page: 4/10 (<a href="../archive.html">archive</a>)</li>
+				<li class="next"><a href="https://kostenko.org/5">Next</a></li>
+		</ul>
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <!--script src="../js/prettify.js"></script-->
+		<script src="../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

@@ -1,0 +1,384 @@
+<<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>Sergii Kostenko's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/asciidoctor.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+    <!--link href="../css/prettify.css" rel="stylesheet"-->
+    <link href="../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../tags/logging.html">logging</a></li>
+										<li><a href="../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../tags/resin.html">resin</a></li>
+										<li><a href="../tags/performance.html">performance</a></li>
+										<li><a href="../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../tags/gradle.html">gradle</a></li>
+										<li><a href="../tags/ide.html">ide</a></li>
+										<li><a href="../tags/cdi.html">cdi</a></li>
+										<li><a href="../tags/batch.html">batch</a></li>
+										<li><a href="../tags/ci.html">ci</a></li>
+										<li><a href="../tags/openapi.html">openapi</a></li>
+										<li><a href="../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../tags/jberet.html">jberet</a></li>
+										<li><a href="../tags/github.html">github</a></li>
+										<li><a href="../tags/activemq.html">activemq</a></li>
+										<li><a href="../tags/jetty.html">jetty</a></li>
+										<li><a href="../tags/api.html">api</a></li>
+										<li><a href="../tags/jcache.html">jcache</a></li>
+										<li><a href="../tags/jpa.html">jpa</a></li>
+										<li><a href="../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../tags/json-b.html">json-b</a></li>
+										<li><a href="../tags/linux.html">linux</a></li>
+										<li><a href="../tags/jmx.html">jmx</a></li>
+										<li><a href="../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../tags/java.html">java</a></li>
+										<li><a href="../tags/security.html">security</a></li>
+										<li><a href="../tags/jms.html">jms</a></li>
+										<li><a href="../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../tags/sql.html">sql</a></li>
+										<li><a href="../tags/swagger.html">swagger</a></li>
+										<li><a href="../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../tags/jwt.html">jwt</a></li>
+										<li><a href="../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+
+				<a href="https://kostenko.org/blog/2019/10/migration-wildfly-10-to-18.html"><h1>Migration from Wildfly 10 to Wildfly 18</h1></a>
+				<p>22 October 2019</p>
+  			<p><p>Usually vendors declares easy migration, provides how-to documentation and even migration tools. But depends on complexity of your application you can stuck with some compatibility issues. Below i will explain my Wildfliy 10 to Wildfliy 18 migration steps.</p>
+<p>First of all you can use provided by WF <a href="https://github.com/wildfly/wildfly-server-migration">migration tool</a> to migrate configuration files and compatible modules to the needed release:</p>
+<pre><code class="language-java">git clone https://github.com/wildfly/wildfly-server-migration.git
+cd ./wildfly-server-migration/
+mvn clean install
+cd ./dist/standalone/target/
+unzip jboss-server-migration-1.8.0.Final-SNAPSHOT.zip
+cd ./jboss-server-migration
+
+./jboss-server-migration.sh -s /opt/wildfly-10.1.0.Final -t /opt/wildfly-18.0.0.Final/
+</code></pre>
+<p>Now let's see application level migration issues:</p>
+<p>Issue #1:</p>
+<pre><code class="language-java">Caused by: java.lang.IllegalArgumentException: org.hibernate.hql.internal.ast.QuerySyntaxException: Invalid path: 'org.kostenko.STATUS.ACTIVE'
+</code></pre>
+<p>Error above related to the Hibernate 5.2 <a href="https://vladmihalcea.com/the-performance-penalty-of-class-forname-when-parsing-jpql-and-criteria-queries/">performance improvement</a> that avoids unnecessary calls to Class.forName(). Solution here is <strong>using Java Naming conventions for a constant.</strong> (for example rename STATUS to Status) or in case  using non-conventional Java constants set the</p>
+<pre><code class="language-java">&lt;property name=&quot;hibernate.query.conventional_java_constants&quot; value=&quot;false&quot;/&gt;
+</code></pre>
+<p>in your <strong>persistence.xml</strong></p>
+<p>Issue #2:</p>
+<pre><code class="language-java">java.lang.IllegalArgumentException: ArquillianServletRunner not found. Could not determine ContextRoot from ProtocolMetadata, please contact DeployableContainer developer.
+</code></pre>
+<p>In case using Arquillian you need just update version <code>org.wildfly.arquillian:wildfly-arquillian-container-managed</code> to version <code>2.2.0.Final</code></p>
+<p>Issue #3:</p>
+<pre><code class="language-java">org.jboss.weld.exceptions.UnsupportedOperationException:
+  at org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:49)
+</code></pre>
+<p>Seems to old <a href="https://issues.jboss.org/browse/WELD-2407">BUG</a> happened and Weld does not support Java 8 default methods completely. So, pity but same refactoring here is needed.</p>
+<p>Issue #4:</p>
+<pre><code class="language-java">WFLYRS0018: Explicit usage of Jackson annotation in a JAX-RS deployment; the system will disable JSON-B processing for the current deployment. Consider setting the 'resteasy.preferJacksonOverJsonB' property to 'false' to restore JSON-B.
+...
+javax.ws.rs.client.ResponseProcessingException: javax.ws.rs.ProcessingException: RESTEASY008200: JSON Binding deserialization error  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.extractResult(ClientInvocation.java:156)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocation.invoke(ClientInvocation.java:473)  
+  at org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder.get(ClientInvocationBuilder.java:195)  
+</code></pre>
+<p>Since latest versions, WF uses <code>org.eclipse.yasson</code> as <strong>JSON-B</strong> provider. It can provoke some compatibility problems in case using different  implementations. Solution here is refactoring according to the JSON-B specification or excluding <code>resteasy-json-binding-provider</code> from application class loader by providing <code>WEB-INF/jboss-deployment-structure.xml</code>:</p>
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;jboss-deployment-structure&gt;
+    &lt;deployment&gt;
+        &lt;exclusions&gt;
+            &lt;module name=&quot;org.jboss.resteasy.resteasy-json-binding-provider&quot;/&gt;
+        &lt;/exclusions&gt;
+    &lt;/deployment&gt;
+&lt;/jboss-deployment-structure&gt;
+</code></pre>
+<p>or in case using EARs, do exclusion from submodules like</p>
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;jboss-deployment-structure&gt;
+    &lt;deployment&gt;
+        &lt;exclusions&gt;
+            &lt;module name=&quot;org.jboss.resteasy.resteasy-json-binding-provider&quot;/&gt;
+        &lt;/exclusions&gt;
+    &lt;/deployment&gt;
+    &lt;sub-deployment name=&quot;module-1.jar&quot;&gt;
+        &lt;exclusions&gt;
+            &lt;module name=&quot;org.jboss.resteasy.resteasy-json-binding-provider&quot;/&gt;
+        &lt;/exclusions&gt;
+    &lt;/sub-deployment&gt;    
+&lt;/jboss-deployment-structure&gt;
+</code></pre>
+<p>Issue #5:<br />
+According to the fixed Hibernate <a href="https://hibernate.atlassian.net/browse/HHH-11278">BUG</a>, for now JPA call <code>setMaxResult(0)</code> <strong>returns empty List</strong> instead of <strong>ALL</strong> elements in previous versions. So, just check it and do some refactoring if needed.</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/10/migration-wildfly-10-to-18.html#disqus_thread" data-disqus-identifier="blog/2019/10/migration-wildfly-10-to-18.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/10/jax-rs-jersey-thread-leak.html"><h1>JAX-RS Client ThreadPool leak</h1></a>
+				<p>04 October 2019</p>
+  			<p><p>Recently got resource(ThreadPool\Thread) leak with JAX-RS Client implementation on WF10.0.1 (RestEasy).<br />
+<img src="/img/2019-10-thraed-leak.png" alt="jax-rs thread leak" /></p>
+<p>From the dump above we can see, that pool number is extremely height, the same time thread number is always 1. That means that some code uses <code>Executors.new*</code>, which returns <code>java.util.concurrent.ThreadPoolExecutor</code> using the DefaultThreadFactory.</p>
+<p>Actually in this situation, it is <strong>ALL</strong> than we can see from thread and heap dumps when debugging leak like above. Because in case classes containing these executors was garbage collected, the executors get orphaned (but are still alive and uncollectable), making it difficult/impossible to detect from a heap dump where the executors came from.</p>
+<p><strong>Lesson #1</strong> is: Doing <code>Executors.new*</code>, would be nice to little bit think about guys who will support your code and provide non default thread names with custom ThreadFactory like :)</p>
+<pre><code class="language-java">ExecutorService es = Executors.newCachedThreadPool(new CustomThreadFactory());
+
+...
+
+class CustomThreadFactory implements ThreadFactory {
+
+    @Override
+    public Thread newThread(final Runnable r) {
+        return new Thread(r, &quot;nice_place_for_helpful_name&quot;);
+    }
+}
+</code></pre>
+<p>So, after many times of investigation and &quot;heap walking&quot;(paths to GC root) i found few <code>Executors$DefaultThreadFactory</code> like</p>
+<p><img src="/img/2019-10-thraed-leak-1.png" alt="jax-rs thread leak" /></p>
+<p>what made me see the code with REST services invocations. Something like</p>
+<pre><code class="language-java">public void doCall() {
+    Client client = ClientBuilder.newClient();
+    Future&lt;Response&gt; future = client.target(&quot;http://...&quot;)
+                                 .request()
+                                 .async().get();
+}
+</code></pre>
+<p>According to WF10 JAX-RS implementation each <code>newClient()</code> will build ResteasyClient that uses <code>ExecutorService asyncInvocationExecutor</code> to do requests and potentially it is can be the reason of the leak.</p>
+<p><strong>Lesson #2</strong> is: Always! do <code>close()</code> client after usage. Check that implementation closes connection and shutdowns ThreadPool in case errors (timeouts, socket resets, etc).</p>
+<p><strong>Lesson #3</strong> is: Try to construct only a small number of Client instances in the application. Last one is still bit unclear from the pure JakartaEE application point of view, as it not works as well in  multi-threaded environment. (<code>Invalid use of BasicClientConnManager: connection still allocated. Make sure to release the connection before allocating another one.</code>)</p>
+<p>P.S. Many thanks for JProfiler tool trial version to make me happy with ThreadDump walking.</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/10/jax-rs-jersey-thread-leak.html#disqus_thread" data-disqus-identifier="blog/2019/10/jax-rs-jersey-thread-leak.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/09/jee-to-jakartaee-migration.html"><h1>Migration from JEE to JakartaEE</h1></a>
+				<p>30 September 2019</p>
+  			<p><p>As you probably know Java EE was moved from Oracle to the Eclipse Foundation where will evolve under the <strong>Jakarta EE</strong> brand.  Sept. 10, 2019 Jakarta EE Full Platform and Web Profile specifications was released by Eclipse Foundation during <a href="https://jakartaone.org/">JakartaOne Livestream</a>. Few days later Wildfly declared that <strong>WildFly 17.0.1</strong> has passed the Jakarta EE 8 TCK and certification request has been approved by the Jakarta EE Spec Committee. So, now WildFly is a Jakarta EE Full platform compatible implementation.</p>
+<p>Let's do migration of typical <a href="https://kostenko.org/blog/2019/08/ee-application-multi-module-template.html">gradle EE project</a> to the Jakarta EE and look how hard is it. Current JakartaEE version <code>8.0.0</code> is fully compatible with JavaEE version <code>8.0</code>, that means no need to change project sources, just update dependency from <code>javax:javaee-api:8.0</code> to <code>jakarta.platform:jakarta.jakartaee-api:8.0.0</code></p>
+<p><code>updated build.gradle:</code></p>
+<pre><code class="language-java">apply plugin: 'war'
+dependencies {
+    providedCompile &quot;jakarta.platform:jakarta.jakartaee-api:8.0.0&quot;
+}
+</code></pre>
+<p>That is it! Application builds and works well under WF17.0.1</p>
+<p>Source code of demo application available on <a href="https://github.com/kostenkoserg/ee-application-multi-module-gradle-template">GitHub</a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/09/jee-to-jakartaee-migration.html#disqus_thread" data-disqus-identifier="blog/2019/09/jee-to-jakartaee-migration.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/08/wildfly-jconsole-mbeans-list-problem.html"><h1>Wildfly JMX connection problems (so slow and terminates)</h1></a>
+				<p>19 August 2019</p>
+  			<p><p>JMX (Java Management Extensions ) - is a technology that provide us possibility to monitoring applications (application servers) by <strong>MBeans (Managed Bean)</strong> objects.<br />
+List of supported MBeans can be obtained by <strong>JConsole</strong> tool that already included to JDK. As JMX does not provide strong defined communication protocol, - implementations can be different depends on vendor.<br />
+For example, to connect to Wildfly Application Server you need to use included in distribution <code>jconsole.sh</code> script:</p>
+<pre><code class="language-java">&lt;WFLY_HOME&gt;/bin/jconsole.sh
+</code></pre>
+<p>or add <code>&lt;WFLY_HOME&gt;/bin/client/jboss-client.jar</code> to classpath:</p>
+<pre><code class="language-java">jconsole J-Djava.class.path=$JAVA_HOME\lib\tools.jar;$JAVA_HOME\lib\jconsole.jar;jboss-client.jar
+</code></pre>
+<p>By default, Wildfly uses <code>timeout = 60s</code> for <strong>remote JMX connections</strong>, after that connection will terminated:<br />
+<img src="/img/2019-08-jmx-jconsole.png" alt="jconsole terminated connection" /><br />
+To change default timeout value, use <code>org.jboss.remoting-jmx.timeout</code> property:</p>
+<pre><code class="language-java">./jconsole.sh -J-Dorg.jboss.remoting-jmx.timeout=300
+</code></pre>
+<p>But increasing timeouts, is not always good solution. So, lets search for the reason of slowness. To construct list of MBeans, jconsole recursively requests ALL MBeans, that can be extremely slow in case many deployments and many loggers. (Reported issue: <a href="https://issues.jboss.org/browse/WFCORE-3186">WFCORE-3186</a>). Partial solution here is reducing count of log files by changing rotating type from <code>periodic-size-rotating-file-handler</code>  to <code>size-rotating-file-handler</code>.</p>
+<p>Other reason of extremely slowness can be <code>Batch subsystem (JBeret)</code>. Last one stores a lot of working information in their tables (in memory or on remote DB, depends on configuration). If this tables big enough - it can negative affect performance of server. So, if you, no need for this data then just cleanup this stuff periodically. (for example, every redeploy in case you do it often enough):</p>
+<pre><code class="language-java">TRUNCATE TABLE PARTITION_EXECUTION CASCADE;
+TRUNCATE TABLE STEP_EXECUTION CASCADE;
+TRUNCATE TABLE JOB_EXECUTION CASCADE;
+TRUNCATE TABLE JOB_INSTANCE CASCADE;  
+</code></pre>
+<p>From other point of view, obtaining ALL MBeans is not good decision as well. So, just use tooling that allows to find MBeans by path.</p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/08/wildfly-jconsole-mbeans-list-problem.html#disqus_thread" data-disqus-identifier="blog/2019/08/wildfly-jconsole-mbeans-list-problem.html">Comments</a></p>
+				<hr/>
+				<a href="https://kostenko.org/blog/2019/08/ee-application-multi-module-template.html"><h1>Jakarta EE application multi module gradle template</h1></a>
+				<p>08 August 2019</p>
+  			<p><p>In this post i will share simple and useful <strong>gradle</strong> template to organize multi module Jakarta EE application. We will implement typical one which consists from REST controller (<strong>module1</strong>) and some main logic (<strong>module2</strong>). Big picture of our application architecture is:</p>
+<p><img src="/img/2019-08-ee-multimodule-template-arch.png" alt="EE multi module application" /></p>
+<p>So, lets do initialization of project with next  gradle template:<br />
+<code>settings.gradle:</code></p>
+<pre><code class="language-java">rootProject.name = 'ee-application-multi-module-gradle-template'
+include 'module1'
+include 'module2:module2-api', 'module2:module2-core'
+</code></pre>
+<p><code>root build.gradle:</code></p>
+<pre><code class="language-java">defaultTasks 'clean', 'build'
+subprojects {
+    ext.libraryVersions = [
+        javaee                  : '8.0',
+    ]
+    defaultTasks 'clean', 'build'
+    repositories {
+        jcenter()
+    }
+}
+</code></pre>
+<p>Above, we described initial application structure, where <strong>module1</strong> is flat sub project for our controller and <strong>module2</strong> is our main logic which consists from <code>API</code> and <code>Core</code> sub projects. As controller will use main logic API and we decided to separate application to modules (that means no big enterprise archive) - our sub projects should be simple enough:</p>
+<p><code>module1 build.gradle:</code></p>
+<pre><code class="language-java">apply plugin: 'war'
+dependencies {
+    compile project(':module2:module2-api')
+    providedCompile &quot;javax:javaee-api:${libraryVersions.javaee}&quot;
+}
+</code></pre>
+<p><code>module2:module2-api:</code></p>
+<pre><code class="language-java">apply plugin: 'java'
+dependencies {
+}
+</code></pre>
+<p><code>module2:module2-core:</code></p>
+<pre><code class="language-java">apply plugin: 'war'
+dependencies {
+    compile project(':module2:module2-api')
+    providedCompile &quot;javax:javaee-api:${libraryVersions.javaee}&quot;
+}
+</code></pre>
+<p>Actually, that's it!<br />
+Now we can implement our controller like:</p>
+<pre><code class="language-java">@Path(&quot;/&quot;)
+@Stateless
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class TestEndpoint {
+
+    @EJB(lookup = TestService.TEST_SERVICE_JNDI)
+    TestService testService;
+
+    @GET
+    @Path(&quot;/test&quot;)
+    public Response test() {
+        SomethingDto something = testService.doSomething();
+        return Response.ok().entity(something.getMessage()).build();
+    }
+</code></pre>
+<p>In turn, main logic <code>API</code> contents from <code>Interface</code> and <code>DTO</code>:<br />
+<code>TestService.java:</code></p>
+<pre><code class="language-java">public interface TestService {
+
+  String TEST_SERVICE_NAME = &quot;test-service&quot;;
+  String TEST_SERVICE_JNDI =&quot;java:global/module2-core/&quot; + TEST_SERVICE_NAME;
+
+  SomethingDto doSomething();
+}
+</code></pre>
+<p><code>SomethingDto.java:</code></p>
+<pre><code class="language-java">public class SomethingDto implements Serializable{
+  ...
+}
+</code></pre>
+<p>In the end, main logic <code>Core</code> contents from the logic that implements API:<br />
+<code>TestServiceImpl.java</code></p>
+<pre><code class="language-java">@Remote(TestService.class)
+@Stateless(name = TestService.TEST_SERVICE_NAME)
+public class TestServiceImpl implements TestService {
+
+    @PersistenceContext
+    EntityManager entityManager;
+
+    @Override
+    public SomethingDto doSomething() {
+        TestEntity entity = entityManager.find(TestEntity.class, Long.MAX_VALUE);
+        return new SomethingDto(&quot;Hello Jakarta EE world!&quot;);
+    }
+}
+</code></pre>
+<p>Described Jakarta EE application architecture allows us enjoy all power of EE with absolutely transparent inter module interactions and, the same time, stay close to micro service design - as we have no limits with using one container for all modules.</p>
+<p>Source code of this demo available on <a href="https://github.com/kostenkoserg/ee-application-multi-module-gradle-template">GitHub</a></p>
+</p>
+				<p class="text-right"><a href="https://kostenko.org/blog/2019/08/ee-application-multi-module-template.html#disqus_thread" data-disqus-identifier="blog/2019/08/ee-application-multi-module-template.html">Comments</a></p>
+				<hr/>
+
+		<ul class="pager">
+				<li class="previous"><a href="https://kostenko.org/4">Previous</a></li>
+			<li">Page: 5/10 (<a href="../archive.html">archive</a>)</li>
+				<li class="next"><a href="https://kostenko.org/6">Next</a></li>
+		</ul>
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <!--script src="../js/prettify.js"></script-->
+		<script src="../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

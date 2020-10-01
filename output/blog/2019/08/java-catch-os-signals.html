@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>How to catch &apos;kill&apos; signals in java</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <!--link href="../../../css/prettify.css" rel="stylesheet"-->
+    <link href="../../../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../../../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../../../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../../../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../../../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../../../tags/logging.html">logging</a></li>
+										<li><a href="../../../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../../../tags/resin.html">resin</a></li>
+										<li><a href="../../../tags/performance.html">performance</a></li>
+										<li><a href="../../../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../../../tags/gradle.html">gradle</a></li>
+										<li><a href="../../../tags/ide.html">ide</a></li>
+										<li><a href="../../../tags/cdi.html">cdi</a></li>
+										<li><a href="../../../tags/batch.html">batch</a></li>
+										<li><a href="../../../tags/ci.html">ci</a></li>
+										<li><a href="../../../tags/openapi.html">openapi</a></li>
+										<li><a href="../../../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../../../tags/jberet.html">jberet</a></li>
+										<li><a href="../../../tags/github.html">github</a></li>
+										<li><a href="../../../tags/activemq.html">activemq</a></li>
+										<li><a href="../../../tags/jetty.html">jetty</a></li>
+										<li><a href="../../../tags/api.html">api</a></li>
+										<li><a href="../../../tags/jcache.html">jcache</a></li>
+										<li><a href="../../../tags/jpa.html">jpa</a></li>
+										<li><a href="../../../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../../../tags/json-b.html">json-b</a></li>
+										<li><a href="../../../tags/linux.html">linux</a></li>
+										<li><a href="../../../tags/jmx.html">jmx</a></li>
+										<li><a href="../../../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../../../tags/java.html">java</a></li>
+										<li><a href="../../../tags/security.html">security</a></li>
+										<li><a href="../../../tags/jms.html">jms</a></li>
+										<li><a href="../../../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../../../tags/sql.html">sql</a></li>
+										<li><a href="../../../tags/swagger.html">swagger</a></li>
+										<li><a href="../../../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../../../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../../../tags/jwt.html">jwt</a></li>
+										<li><a href="../../../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../../../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../../../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../../../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../../../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../../../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+	<div class="page-header">
+		<h1>How to catch &apos;kill&apos; signals in java</h1>
+	</div>
+
+	<p><em>07 August 2019</em></p>
+
+	<p><p>You can send different signals to your application using <strong>kill -l</strong> command. By default <strong>kill</strong> will sent <code>TERM</code> signal. Java by default catches some types of signals, for example</p>
+<pre><code class="language-java">kill -3 &lt;PID&gt;
+</code></pre>
+<p>will dump Java stack traces to the standard error stream.</p>
+<p>Also, you can catch <code>signal</code> inside your application, like</p>
+<pre><code class="language-java">public class App {
+    public static void main(String... s) throws Exception {
+
+        Signal.handle(new Signal(&quot;HUP&quot;), signal -&gt; {
+            System.out.println(signal.getName() + &quot; (&quot; + signal.getNumber() + &quot;)&quot;);
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(1000l);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+}
+</code></pre>
+<p>List of available signals you can get by executing <code>kill -l</code>:</p>
+<pre><code class="language-java">kostenko@kostenko:~$ kill -l
+ 1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+ 6) SIGABRT	 7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+11) SIGSEGV	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+31) SIGSYS	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+63) SIGRTMAX-1	64) SIGRTMAX
+</code></pre>
+<p>Notice! Not all signals can be catched in application, some of them reserved by OS. For example, if you will try to handle <strong>kill -SIGKILL (kill -9)</strong> , then you get:</p>
+<pre><code class="language-java">Exception in thread &quot;main&quot; java.lang.IllegalArgumentException: Signal already used by VM or OS: SIGKILL
+	at java.base/jdk.internal.misc.Signal.handle(Signal.java:173)
+	at jdk.unsupported/sun.misc.Signal.handle(Signal.java:157)
+</code></pre>
+</p>
+
+	<hr />
+	<div class="row">
+	<div class="box">
+
+	<div id="disqus_thread"></div>
+	<script>
+
+	var disqus_config = function () {
+	this.page.url = 'https://kostenko.org/blog/2019/08/java-catch-os-signals.html';
+	this.page.identifier = 'blog/2019/08/java-catch-os-signals.html';
+	};
+
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = 'https://kostenko-org.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+	})();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div>
+</div>
+
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <!--script src="../../../js/prettify.js"></script-->
+		<script src="../../../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>

@@ -23,7 +23,7 @@ INFO  [stdout] (default task-1) Hibernate: select blogentity0_.id as id1_0_, blo
 
 **2.** Enable `ALL` log level for `org.hibernate` category like:
 ```java
-/subsystem=logging/periodic-rotating-file-handler=sql_handler:add(level=ALL, file={"path"=>"sql.log"}, append=true, autoflush=true, suffix=.yyyy-MM-dd,formatter="%d{yyyy-MM-dd HH:mm:ss,SSS}")
+/subsystem=logging/periodic-rotating-file-handler=sql_handler:add(level=ALL, file={"path"=>"sql.log"}, append=true, autoflush=true, suffix=.yyyy-MM-dd,formatter="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n")
 /subsystem=logging/logger=org.hibernate.SQL:add(use-parent-handlers=false,handlers=["sql_handler"])
 /subsystem=logging/logger=org.hibernate.type.descriptor.sql.BasicBinder:add(use-parent-handlers=false,handlers=["sql_handler"])
 ```

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132824591-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132824591-1');
+</script>
+
+    <meta charset="utf-8"/>
+    <title>Distributed caching with Wildfly/Infinispan and poor JCache support.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="generator" content="JBake">
+
+    <!-- Le styles -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../css/asciidoctor.css" rel="stylesheet">
+    <link href="../../../css/base.css" rel="stylesheet">
+    <!--link href="../../../css/prettify.css" rel="stylesheet"-->
+    <link href="../../../css/prism.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="../../../favicon.ico">
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <b><a class="navbar-brand" href="../../../index.html">Sergii Kostenko's Blog</a></b>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../../../about.html">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+										<li><a href="../../../tags/wildfly.html">wildfly</a></li>
+										<li><a href="../../../tags/logging.html">logging</a></li>
+										<li><a href="../../../tags/jakartaee.html">jakartaee</a></li>
+										<li><a href="../../../tags/resin.html">resin</a></li>
+										<li><a href="../../../tags/performance.html">performance</a></li>
+										<li><a href="../../../tags/infinispan.html">infinispan</a></li>
+										<li><a href="../../../tags/gradle.html">gradle</a></li>
+										<li><a href="../../../tags/ide.html">ide</a></li>
+										<li><a href="../../../tags/cdi.html">cdi</a></li>
+										<li><a href="../../../tags/batch.html">batch</a></li>
+										<li><a href="../../../tags/ci.html">ci</a></li>
+										<li><a href="../../../tags/openapi.html">openapi</a></li>
+										<li><a href="../../../tags/microprofile.html">microprofile</a></li>
+										<li><a href="../../../tags/jberet.html">jberet</a></li>
+										<li><a href="../../../tags/github.html">github</a></li>
+										<li><a href="../../../tags/activemq.html">activemq</a></li>
+										<li><a href="../../../tags/jetty.html">jetty</a></li>
+										<li><a href="../../../tags/api.html">api</a></li>
+										<li><a href="../../../tags/jcache.html">jcache</a></li>
+										<li><a href="../../../tags/jpa.html">jpa</a></li>
+										<li><a href="../../../tags/jenkins.html">jenkins</a></li>
+										<li><a href="../../../tags/json-b.html">json-b</a></li>
+										<li><a href="../../../tags/linux.html">linux</a></li>
+										<li><a href="../../../tags/jmx.html">jmx</a></li>
+										<li><a href="../../../tags/vaadin.html">vaadin</a></li>
+										<li><a href="../../../tags/java.html">java</a></li>
+										<li><a href="../../../tags/security.html">security</a></li>
+										<li><a href="../../../tags/jms.html">jms</a></li>
+										<li><a href="../../../tags/jaxb.html">jaxb</a></li>
+										<li><a href="../../../tags/sql.html">sql</a></li>
+										<li><a href="../../../tags/swagger.html">swagger</a></li>
+										<li><a href="../../../tags/hibernate.html">hibernate</a></li>
+										<li><a href="../../../tags/quarkus.html">quarkus</a></li>
+										<li><a href="../../../tags/jwt.html">jwt</a></li>
+										<li><a href="../../../tags/rest-client.html">rest-client</a></li>
+										<li><a href="../../../tags/tomcat.html">tomcat</a></li>
+										<li><a href="../../../tags/jax-rs.html">jax-rs</a></li>
+										<li><a href="../../../tags/jsr532.html">jsr532</a></li>
+										<li><a href="../../../tags/jbake.html">jbake</a></li>
+								</ul>
+						</li>
+          </ul>
+					<!-- switch language -->
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/">en</a></li>
+						<li><a href="/ru">ru</a></li>
+						<li><a  class="icon-rss" href="../../../feed.xml"></a></li>
+					</ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+
+	<div class="page-header">
+		<h1>Distributed caching with Wildfly/Infinispan and poor JCache support.</h1>
+	</div>
+
+	<p><em>26 August 2020</em></p>
+
+	<p><p>Latest trends teach us to do development of stateless applications, and if you can - keep your design stateless. But, by some reason, you may need to cache and share state between nodes.</p>
+<p>It would be nice to have <strong><a href="https://jcp.org/en/jsr/detail?id=107">JSR 107: JCACHE - Java Temporary Caching API</a></strong> support in Wildfly Application Server, but unfortunately, JCache still not a part of JakartaEE specification (i hope one day it will) and pity to realize that Wildfly does not support JCache by default.</p>
+<p>From other point of view many well known vendors like <a href="https://hazelcast.org/">Hazelcast</a>, <a href="https://infinispan.org/">Infinispan</a>, <a href="https://www.ehcache.org/">Ehcache</a> etc, supports JCache API as well. In turn significant Infinispan part integrated into Wildfly Application Server and can be used as distributed cache provider over  separate <strong><a href="https://docs.wildfly.org/20/wildscribe/subsystem/infinispan/index.html">infinispan subsystem</a></strong> configuration.</p>
+<p>So, let's design sample Jakarta EE application to see how <strong>distrubuted cache</strong> looks and works on practice.</p>
+<p>First, we need for at least two node Wildfly cluster - please refer to my article about <a href="https://kostenko.org/blog/2019/04/wildfly-cluster-domain-mode.html">Wildfly domain mode cluster and load balancing from the box</a>. And then we are ready to configure distributed cache for our application:</p>
+<pre><code class="language-bash">/profile=full-ha/subsystem=infinispan/cache-container=mycachecontainer:add
+/profile=full-ha/subsystem=infinispan/cache-container=mycachecontainer/distributed-cache=mycache:add
+</code></pre>
+<p>After simply server configuration above, we are ready to create our sample application. And as usual with Jakarta EE - <strong><code>build.gradle</code></strong> looks pretty simple and clear :</p>
+<pre><code class="language-java">apply plugin: 'war'
+dependencies {
+    providedCompile &quot;jakarta.platform:jakarta.jakartaee-api:8.0.0&quot;
+    providedCompile &quot;org.infinispan:infinispan-core:10.1.8.Final&quot;
+}
+</code></pre>
+<p>Now to use configured above <code>mycache</code> we need to register cache resource in the one from two ways :</p>
+<pre><code class="language-java">@Startup
+@Singleton
+@LocalBean
+public class MyCacheResource {
+    @Resource(lookup = &quot;java:jboss/infinispan/cache/mycachecontainer/mycache&quot;)
+    private org.infinispan.Cache&lt;String, Object&gt; myCache;
+</code></pre>
+<p><strong>OR</strong> provide  resource reference in your <strong>WEB-INF/web.xml</strong> descriptor:</p>
+<pre><code class="language-xml">&lt;web-app version=&quot;2.5&quot;  xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;&gt;
+    &lt;display-name&gt;JCache API example&lt;/display-name&gt;
+    &lt;resource-env-ref&gt;
+        &lt;resource-env-ref-name&gt;mycache&lt;/resource-env-ref-name&gt;
+        &lt;lookup-name&gt;java:jboss/infinispan/cache/mycachecontainer/mycache&lt;/lookup-name&gt;
+    &lt;/resource-env-ref&gt;    
+&lt;/web-app&gt;
+</code></pre>
+<p>I personally prefer second one because it allows move vendor specific code and dependencies from application source level to the descriptor which is designed for. Actually, i recommend to use standard API as much as possible and <strong>refer to custom vendor specific stuff very carefully</strong>.</p>
+<p>Also to help Wildfly avoid casting exception like <strong><code>java.lang.IllegalArgumentException: Can not set org.infinispan.Cache field to org.jboss.as.clustering.infinispan.DefaultCache</code></strong> we need to configure module dependencies over <strong>MANIFEST.MF</strong>:</p>
+<pre><code class="language-bash">Manifest-Version: 1.0
+Dependencies: org.infinispan export
+</code></pre>
+<p><strong>OR</strong> over <strong>jboss-deployment-structure.xml</strong> :</p>
+<pre><code class="language-xml">&lt;jboss-deployment-structure&gt;
+   &lt;deployment&gt;
+      &lt;dependencies&gt;
+         &lt;module name=&quot;org.infinispan&quot; export=&quot;TRUE&quot; /&gt;
+      &lt;/dependencies&gt;
+   &lt;/deployment&gt;
+&lt;/jboss-deployment-structure&gt;
+</code></pre>
+<p>And again, I prefer second way as <strong>vendor specific descriptor is a right place for vendor specific stuff</strong>.  Please refer to <strong><a href="https://access.redhat.com/documentation/en-us/jboss_enterprise_application_platform/6/html/development_guide/add_an_explicit_module_dependency_to_a_deployment1">deployment module dependencies</a></strong> explanation for the details</p>
+<p>Now when all preparation is complete, - let's implement simple service and JAX-RS resource to check how cache distribution works:</p>
+<p><code>TestCacheService.java:</code></p>
+<pre><code class="language-java">@Named
+public class TestCacheService {
+
+    @Resource(name = &quot;mycache&quot;)
+    org.infinispan.Cache cache;
+
+    public void putIspnCache(String key, String value) {
+        cache.put(key, String.format(&quot;%s (%s)&quot;, value, new Date()));
+    }
+
+    public Object getIspnCache(String key) {
+        return cache.get(key);
+    }
+}
+</code></pre>
+<p><code>TestCacheEndpoint.java:</code></p>
+<pre><code class="language-java">@Stateless
+@ApplicationPath(&quot;/&quot;)
+@Path(&quot;/jcache&quot;)
+public class TestCacheEndpoint extends Application {
+
+    @Inject
+    TestCacheService service;
+
+    @GET
+    @Path(&quot;/ispn-put&quot;)
+    public Response putIspn(@QueryParam(&quot;key&quot;) String key, @QueryParam(&quot;value&quot;) String value) {
+        service.putIspnCache(key, value);
+        return Response.ok(&quot;ok&quot;).build();
+    }
+
+    @GET
+    @Path(&quot;/ispn-get&quot;)
+    public Response getIspn(@QueryParam(&quot;key&quot;) String key) {
+        return Response.ok(service.getIspnCache(key)).build();
+    }
+}    
+</code></pre>
+<p>Time to do deploy and test:</p>
+<pre><code class="language-bash">[domain@localhost:9990 /] deploy ~/work/kostenko/wildfly-infinispan-example/build/libs/jcache-examples.war --server-groups=backend-servers
+</code></pre>
+<pre><code class="language-bash">curl -o - &quot;http://localhost:8180/jcache-examples/jcache/ispn-put?key=KEY1&amp;value=VALUE1&quot;
+ok
+curl -o - &quot;http://localhost:8280/jcache-examples/jcache/ispn-get?key=KEY1&quot;
+VALUE1 (Mon Aug 24 21:26:56 EEST 2020)
+curl -o - &quot;http://localhost:8280/jcache-examples/jcache/ispn-put?key=KEY2&amp;value=VALUE2&quot;
+ok
+curl -o - &quot;http://localhost:8180/jcache-examples/jcache/ispn-get?key=KEY2&quot;
+VALUE2 (Mon Aug 24 21:27:52 EEST 2020)
+</code></pre>
+<p>As you can see from above, value we put on node1 available on node2 and vice versa. Even if we add new node to the cluster - cached values will be available on the fresh node as well:</p>
+<pre><code class="language-bash">[domain@localhost:9990 /] /host=master/server-config=backend3:add(group=backend-servers, socket-binding-port-offset=300)
+[domain@localhost:9990 /] /host=master/server-config=backend3:start(blocking=true)
+</code></pre>
+<pre><code class="language-bash">curl -o - &quot;http://localhost:8380/jcache-examples/jcache/ispn-get?key=KEY2&quot;
+VALUE2 (Mon Aug 24 21:27:52 EEST 2020)
+</code></pre>
+<p>Great! So for now we able to share state between cluster members and, actually, this is enough for lot of typical use cases.<br />
+So, what about some  standardization of our application ? As was noticed above <strong>JCache</strong> can be helpful here, but unfortunately enabling last one on Wildfly is not trivial at all.</p>
+<p>To get JCache worked you can patch your Wildfly Application Server with <a href="https://infinispan.org/download-archive/">Infinispan wildfly modules</a> or just put missed libraries to the your application and exclude transitive ones to avoid conflicts with libraries that already present in the Wildfly.</p>
+<p><code>build.gradle:</code></p>
+<pre><code class="language-java">...
+dependencies {
+    providedCompile &quot;jakarta.platform:jakarta.jakartaee-api:8.0.0&quot;
+    compile &quot;javax.cache:cache-api:1.0.0&quot;
+    compile &quot;org.infinispan:infinispan-jcache:10.1.8.Final&quot;
+    compile &quot;org.infinispan:infinispan-cdi-embedded:10.1.8.Final&quot;
+}
+configurations {
+  runtime.exclude group: &quot;org.infinispan&quot;, module: &quot;infinispan-core&quot;
+  runtime.exclude group: &quot;org.infinispan&quot;, module: &quot;infinispan-commons&quot;
+  runtime.exclude group: &quot;org.infinispan.protostream&quot;, module: &quot;protostream&quot;
+}
+</code></pre>
+<p><code>jboss-deployment-structure.xml:</code></p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;jboss-deployment-structure&gt;
+    &lt;deployment&gt;
+        &lt;dependencies&gt;
+           &lt;module name=&quot;org.infinispan&quot; export=&quot;TRUE&quot; /&gt;
+           &lt;module name=&quot;org.infinispan.commons&quot; export=&quot;TRUE&quot; /&gt;
+           &lt;module name=&quot;org.infinispan.protostream&quot; export=&quot;TRUE&quot; /&gt;
+        &lt;/dependencies&gt;
+    &lt;/deployment&gt;
+&lt;/jboss-deployment-structure&gt;
+</code></pre>
+<p>After that you should be able to use JCache in the usual way:</p>
+<p><code>TestCacheService.java:</code></p>
+<pre><code class="language-java">...
+@CacheResult(cacheName = &quot;mycache&quot;)
+public String getJCacheResult() {
+    System.out.println(&quot;getJCacheResult&quot;);
+    return new Date().toString();
+}
+...
+</code></pre>
+<p><code>beans.xml:</code></p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee  http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd&quot; bean-discovery-mode=&quot;all&quot;&gt;
+    &lt;interceptors&gt;
+        &lt;class&gt;org.infinispan.jcache.annotation.CacheResultInterceptor&lt;/class&gt;
+    &lt;/interceptors&gt;
+&lt;/beans&gt;
+</code></pre>
+<p><strong>@CacheResult</strong> works and caching the result  <strong>BUT it is not related to the configured on Wildfly <code>mycache</code> and ignores configured options</strong> like lifespans, distributions etc because Infinispan's JCache CachingProvider implementation created caches from an Infinispan native configuration file (based on the provided URI, interpreted as a file path) instead of WF configuration.</p>
+<p>I did some digging about possibility to produce custom JCache CachingProvider but unfortunately did not find any workable solution for it. Also refer to my post about <a href="https://kostenko.org/blog/2020/01/infinispan-distributed-cache-issues.html">ispn distributed cache issues</a> workaround.</p>
+<p>As usual, sample source code available on <a href="https://github.com/kostenkoserg/wildfly-infinispan-example">GitHub</a></p>
+</p>
+
+	<hr />
+	<div class="row">
+	<div class="box">
+
+	<div id="disqus_thread"></div>
+	<script>
+
+	var disqus_config = function () {
+	this.page.url = 'https://kostenko.org/blog/2020/08/wildfly-infinspan.html';
+	this.page.identifier = 'blog/2020/08/wildfly-infinspan.html';
+	};
+
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = 'https://kostenko-org.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+	})();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+</div>
+</div>
+
+		</div>
+		<div id="push"></div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+        <p class="muted credit">&copy; 2019 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.4</a></p>
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../../js/bootstrap.min.js"></script>
+    <!--script src="../../../js/prettify.js"></script-->
+		<script src="../../../js/prism.js"></script>
+
+		<script id="dsq-count-scr" src="//kostenko-org.disqus.com/count.js" async></script>
+  </body>
+</html>
