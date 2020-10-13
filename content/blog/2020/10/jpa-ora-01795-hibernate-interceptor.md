@@ -1,5 +1,5 @@
 title= JPA and "ORA-01795: maximum number of expressions in a list is 1000 error" workaround
-date=2020-10-09
+date=2020-10-13
 type=post
 tags=jakartaee, jpa, hibernate, oracle
 status=published
@@ -16,7 +16,7 @@ Exists few ways to deal with it from the SQL point of view:
   * Use temporary table to insert IDs and use sub select like **`field IN (select id from TMP_IDS)`**
   * Use tuples like **`where (id, 0) IN ((1, 0)...(n, 0))`**
 
-Some data mapping frameworks provides solution for above by default, but unfortunately, Hibernate (most popular JPA provider) does not yet.
+Some data mapping frameworks provides solution for above by default, but unfortunately, **Hibernate** (most popular JPA provider) does not yet.
 
 Fortunately, we can provide custom solution here by overriding **EmptyInterceptor.onPrepareStatement(String sql)** which is called when SQL string is being prepared and perform some String manipulation with the SQL.
 
@@ -62,6 +62,12 @@ public class SafeInInterceptor extends EmptyInterceptor {
         return sql;
     }
 }
+```
+
+To enable interceptor, -  add next property to the your **`persistence.xml`**
+
+```xml
+<property name="hibernate.ejb.interceptor" value="org.kostenko.example.jpa.dialect.SafeInInterceptor" />
 ```
 
 Time to test:
